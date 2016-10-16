@@ -1,5 +1,5 @@
-tilewerk
-========
+spritewerk
+==========
 
 [![Build Status](https://travis-ci.org/bildepunkt/spritewerk.svg?branch=tilewerk)](https://travis-ci.org/bildepunkt/spritewerk)
 
