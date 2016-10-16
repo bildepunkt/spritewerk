@@ -3,10 +3,16 @@ tilewerk
 
 [![Build Status](https://travis-ci.org/bildepunkt/spritewerk.svg?branch=tilewerk)](https://travis-ci.org/bildepunkt/spritewerk)
 
-## A small, friendly, Javascript framework for device-agnostic game development
-Spritewerk is a lightweight, fun, and easy-to-use solution for producing traditional, console-style games that perform beautifully on any device. The code consists of flexible, generic classes for rapidly developing HTML5 games.
+## A modern, modular, html5 game development library
+Spritewerk is a lightweight, fun, and easy-to-use solution for producing traditional, console-style games that perform beautifully on any device. The code consists of flexible, generic classes for extending to your own needs, or using right out of the box.
 
 ### To install
+Either install with npm
+
+    npm install --save spritewerk
+
+or clone with git
+
     git clone https://github.com/bildepunkt/spritewerk.git
 
 or download archive [here](https://github.com/bildepunkt/spritewerk/archive/master.zip).
@@ -27,3 +33,8 @@ then get webpack to watch changes on `playground/main.js` with:
 Run Spritewerk's tests with
 
     npm run test
+
+### Documentation
+Generate Spritewerk's documentation with
+
+    npm run doc
