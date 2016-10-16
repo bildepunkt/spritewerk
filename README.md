@@ -38,3 +38,6 @@ Run Spritewerk's tests with
 Generate Spritewerk's documentation with
 
     npm run doc
+
+
+requires node `>=4.2.x`

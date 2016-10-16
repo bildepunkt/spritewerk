@@ -1,18 +1,23 @@
-var webpack = require('webpack');
+/* eslint-disable */
+var webpack = require("webpack");
 
 module.exports = {
-    entry: './playground/main.js',
-    output: { path: 'playground', filename: 'bundle.js' },
-    devtool: 'source-map',
+    entry: "./playground/main.js",
+    output: { path: "playground", filename: "bundle.js" },
+    devtool: "source-map",
     module: {
         loaders: [
             {
                 test: /.js?$/,
-                loader: 'babel-loader',
+                loader: "babel-loader",
                 exclude: /node_modules/,
                 query: {
-                    presets: ['es2015']
+                    presets: ["es2015"]
                 }
+            },
+            {
+                test: /\.json$/,
+                loader: "json"
             }
         ]
     }

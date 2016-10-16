@@ -1,3 +1,7 @@
+/* eslint-disable */
+import index from "./";
+/* eslint-enable */
+
 import { applyStyles, fitToWindow } from "./util/domHelpers";
 import { tuneIn } from "./util/radio";
 
@@ -51,9 +55,17 @@ export default class Viewport {
          * @member {HTMLElement} Viewport#video - The video element
          */        
         this.video = options.document.createElement("video");
+        /**
+         * @member {HTMLElement} Viewport#screen - The topmost element to handle UI. Events are also triggered from this element
+         */        
+        this.screen = options.document.createElement("canvas");
 
-        this.canvas.width = width;
-        this.canvas.height = height;
+        this.canvas.id = "canvas";
+        this.video.id = "video";
+        this.screen.id = "screen";
+
+        this.canvas.width = this.screen.width = width;
+        this.canvas.height = this.screen.height = height;
 
         const viewportStyles = {
             height: this.height,
@@ -65,9 +77,11 @@ export default class Viewport {
     
         applyStyles(this.canvas, viewportStyles);
         applyStyles(this.video, viewportStyles);
+        applyStyles(this.screen, viewportStyles);
 
         options.parent.appendChild(this.canvas);
         options.parent.appendChild(this.video);
+        options.parent.appendChild(this.screen);
 
         if (options.fitToWindow) {
             tuneIn(options.window, "resize", this._onResize, this);
@@ -80,9 +94,12 @@ export default class Viewport {
      * @method Viewport#_onResize
      */
     _onResize () {
-        const posCoords = fitToWindow(this.width, this.height, this.options.window.innerWidth, this.options.window.innerHeight);
+        const posCoords = fitToWindow(
+            this.width, this.height, this.options.window.innerWidth, this.options.window.innerHeight
+        );
 
         applyStyles(this.canvas, posCoords);
         applyStyles(this.video, posCoords);
+        applyStyles(this.screen, posCoords);
     }
 }
