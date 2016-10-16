@@ -1,6 +1,6 @@
 {
   "name": "spritewerk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A modern, modular, html5 game development library",
   "scripts": {
     "docs": "./node_modules/.bin/jsdoc ./src/* -d ./docs -R README.md -t ./node_modules/minami",
