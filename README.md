@@ -27,7 +27,7 @@ Want to play with Spritewerk right away? To set up a bare-bones development envi
 
 then get webpack to watch changes on `playground/main.js` with:
 
-    npm run webpack
+    npm run watch-playground
 
 ### Test
 Run Spritewerk's tests with
@@ -40,4 +40,4 @@ Generate Spritewerk's documentation with
     npm run doc
 
 
-requires node `>=4.2.x`
+requires node `>= 4.2.x`
