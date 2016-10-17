@@ -6,10 +6,7 @@ import { applyStyles, fitToWindow } from "./util/domHelpers";
 import { tuneIn } from "./util/radio";
 
 const defaults = {
-    fitToWindow: true,
-    window: null,
-    document: null,
-    parent: null
+    fitToWindow: true
 };
 
 /**
@@ -25,13 +22,16 @@ const defaults = {
  */
 export default class Viewport {
     constructor (width, height, options=defaults) {
-        if (options.window === null) {
+        options = Object.assign(defaults, options);
+
+        // can't set as defaults; throw errors in test env
+        if (options.window === undefined) {
             options.window = window;
         }
-        if (options.document === null) {
+        if (options.document === undefined) {
             options.document = document;
         }
-        if (options.parent === null) {
+        if (options.parent === undefined) {
             options.parent = options.document.body;
         }
 

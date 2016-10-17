@@ -1,0 +1,17 @@
+html {
+    font-family: sans-serif;
+}
+
+a, a:visited {
+    text-decoration: none;
+    color: #aaa;
+}
+
+a:active, a:hover {
+    text-decoration: underline;
+}
+
+#spritewerk {
+    background-color: #444;
+    position: relative;
+}

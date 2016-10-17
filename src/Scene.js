@@ -2,7 +2,7 @@ import { degreesToRadians } from "./util/math";
 import Transform from "./lib/Transform";
 
 let defaults = {
-    debug: true
+    debug: false
 };
 
 /**
@@ -13,7 +13,7 @@ let defaults = {
  * @param {HTMLElement} canvas - The active canvas element
  * @param {Camera} camera - The camera instance
  * @param {Object} [options]
- * @param {Boolean} [options.debug=true] - If true, renders debug objects
+ * @param {Boolean} [options.debug=false] - If true, renders debug objects
  */
 export default class Scene {
     constructor (canvas, camera, options=defaults) {
@@ -89,6 +89,17 @@ export default class Scene {
         );
     }
 
+    clear (fill) {
+        let canvas = this.canvas;
+
+        if (fill) {
+            this.context.fillStyle = fill;
+            this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+        } else {
+            this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
     /**
      * [startRender description]
      * @method Scene#startRender
@@ -115,9 +126,10 @@ export default class Scene {
      * @param  {Sprite|Group} item The item to render
      */
     renderItem (item) {
+        this.ctx.save();
+        this.transform.save();
+
         if (item.isGroup) {
-            this.ctx.save();
-            this.transform.save();
 
             this._applyTransforms(item.sprite);
 
@@ -131,15 +143,16 @@ export default class Scene {
             item.collection.each((item)=> {
                 this.renderItem(item);
             });
-
-            this.ctx.restore();
-            this.transform.restore();
         } else {
+
             item.parentTransforms = this.transform.transformPoint();
             // assign parent transforms before applying sprite's transforms
             this._applyTransforms(item);
             item.render(this.ctx);
         }
+
+        this.ctx.restore();
+        this.transform.restore();
     }
 
     /**
