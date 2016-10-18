@@ -8,9 +8,7 @@ import Canvas from "./_mocks/Canvas";
 import context from "./_mocks/context";
 
 describe("Scene", ()=> {
-    let defaults = {
-        debug: true
-    };
+    let defaults = { debug: false };
     let size = 512;
     let scene;
     let group;
