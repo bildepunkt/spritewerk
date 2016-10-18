@@ -1,7 +1,7 @@
 spritewerk
 ==========
 
-[![Build Status](https://travis-ci.org/bildepunkt/spritewerk.svg?branch=tilewerk)](https://travis-ci.org/bildepunkt/spritewerk)
+[![Build Status](https://travis-ci.org/bildepunkt/spritewerk.svg?branch=master)](https://travis-ci.org/bildepunkt/spritewerk)
 
 ## A modern, modular, html5 game development library
 Spritewerk is a lightweight, fun, and easy-to-use solution for producing traditional, console-style games that perform beautifully on any device. The code consists of flexible, generic classes for extending to your own needs, or using right out of the box.
