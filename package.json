@@ -7,6 +7,7 @@
     "lint": "./node_modules/.bin/eslint ./src",
     "test": "./node_modules/.bin/babel-node spec/_run.js",
     "build": "npm run lint && npm run test",
+    "make-playground": "./make-playground.sh",
     "watch-playground": "./node_modules/.bin/webpack --watch --progress --colors"
   },
   "repository": {

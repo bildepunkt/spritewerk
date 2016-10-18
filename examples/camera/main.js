@@ -9,20 +9,20 @@ class Rect extends Sprite {
     render (context) {
         super.render(context);
 
-        context.fillRect(this.x, this.y, this.width, this.height);
+        context.fillRect(0, 0, this.width, this.height);
     }
 }
 
 (() => {
     const size = 512;
-    const parent = document.querySelector("#spritewerk");
     let rectCount = 32;
     let zoomingIn = true;
     let zoomFactor = 0.01;
     let rotFactor = 0.2;
     
     let viewport = new Viewport(size, size, {
-        parent
+        parent: document.querySelector("#spritewerk"),
+        fitToWindow: false
     });
     let camera = new Camera(0, 0, size, size);
     let scene = new Scene(viewport.canvas, camera, {
@@ -35,14 +35,13 @@ class Rect extends Sprite {
         let wh = Math.round(Math.random() * 16 + 16);
         let x = Math.round(Math.random() * size);
         let y = Math.round(Math.random() * size);
+        let rect = new Rect(x, y, wh, wh);
 
-        group.collection.add(new Rect(x, y, wh, wh));
+        group.collection.add(rect);
     }
 
     ticker.onTick = ()=> {
         scene.clear();
-
-
         scene.startRender(group);
 
         if (camera.zoom > 2) {

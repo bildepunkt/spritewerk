@@ -2,16 +2,34 @@ html {
     font-family: sans-serif;
 }
 
+body {
+    margin: 64px;
+}
+
+pre.code-block {
+    max-height: 512px;
+    overflow-y: scroll;
+}
+
 a, a:visited {
     text-decoration: none;
-    color: #aaa;
+    color: cornflowerblue;
 }
 
 a:active, a:hover {
     text-decoration: underline;
 }
 
+.subtitle {
+    color: #aaa;
+    text-transform: uppercase;
+    padding: 12px 0;
+    border-bottom: 1px dotted #aaa;
+}
+
 #spritewerk {
-    background-color: #444;
+    background-color: #ccc;
     position: relative;
+    width: 512px;
+    height: 512px;
 }

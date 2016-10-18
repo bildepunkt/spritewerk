@@ -50,27 +50,27 @@
 	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
-	var _Camera = __webpack_require__(12);
+	var _Camera = __webpack_require__(1);
 	
 	var _Camera2 = _interopRequireDefault(_Camera);
 	
-	var _Group = __webpack_require__(16);
+	var _Group = __webpack_require__(2);
 	
 	var _Group2 = _interopRequireDefault(_Group);
 	
-	var _Scene = __webpack_require__(13);
+	var _Scene = __webpack_require__(6);
 	
 	var _Scene2 = _interopRequireDefault(_Scene);
 	
-	var _Sprite2 = __webpack_require__(18);
+	var _Sprite2 = __webpack_require__(4);
 	
 	var _Sprite3 = _interopRequireDefault(_Sprite2);
 	
-	var _Ticker = __webpack_require__(20);
+	var _Ticker = __webpack_require__(9);
 	
 	var _Ticker2 = _interopRequireDefault(_Ticker);
 	
-	var _Viewport = __webpack_require__(1);
+	var _Viewport = __webpack_require__(11);
 	
 	var _Viewport2 = _interopRequireDefault(_Viewport);
 	
@@ -96,7 +96,7 @@
 	        value: function render(context) {
 	            _get(Rect.prototype.__proto__ || Object.getPrototypeOf(Rect.prototype), "render", this).call(this, context);
 	
-	            context.fillRect(this.x, this.y, this.width, this.height);
+	            context.fillRect(0, 0, this.width, this.height);
 	        }
 	    }]);
 	
@@ -105,14 +105,14 @@
 	
 	(function () {
 	    var size = 512;
-	    var parent = document.querySelector("#spritewerk");
 	    var rectCount = 32;
 	    var zoomingIn = true;
 	    var zoomFactor = 0.01;
 	    var rotFactor = 0.2;
 	
 	    var viewport = new _Viewport2.default(size, size, {
-	        parent: parent
+	        parent: document.querySelector("#spritewerk"),
+	        fitToWindow: false
 	    });
 	    var camera = new _Camera2.default(0, 0, size, size);
 	    var scene = new _Scene2.default(viewport.canvas, camera, {
@@ -125,13 +125,13 @@
 	        var wh = Math.round(Math.random() * 16 + 16);
 	        var x = Math.round(Math.random() * size);
 	        var y = Math.round(Math.random() * size);
+	        var rect = new Rect(x, y, wh, wh);
 	
-	        group.collection.add(new Rect(x, y, wh, wh));
+	        group.collection.add(rect);
 	    }
 	
 	    ticker.onTick = function () {
 	        scene.clear();
-	
 	        scene.startRender(group);
 	
 	        if (camera.zoom > 2) {
@@ -154,471 +154,6 @@
 
 /***/ },
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable */
-	
-	/* eslint-enable */
-	
-	var _ = __webpack_require__(2);
-	
-	var _2 = _interopRequireDefault(_);
-	
-	var _domHelpers = __webpack_require__(4);
-	
-	var _radio = __webpack_require__(6);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var defaults = {
-	    fitToWindow: true
-	};
-	
-	/**
-	 * @class Viewport
-	 * @requires util/domHelpers
-	 * @requires util/radio
-	 *
-	 * @param {Integer} width The game width
-	 * @param {Integer} height The game height
-	 * @param {Object} options
-	 * @param {HTMLElement} [options.parent=document.body] - The parent element
-	 * @param {Boolean} [options.fitToWindow=true] - If true, the viewport will fill the screen while maintaining aspect ratio
-	 */
-	
-	var Viewport = function () {
-	    function Viewport(width, height) {
-	        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaults;
-	
-	        _classCallCheck(this, Viewport);
-	
-	        options = Object.assign(defaults, options);
-	
-	        // can't set as defaults; throw errors in test env
-	        if (options.window === undefined) {
-	            options.window = window;
-	        }
-	        if (options.document === undefined) {
-	            options.document = document;
-	        }
-	        if (options.parent === undefined) {
-	            options.parent = options.document.body;
-	        }
-	
-	        /**
-	         * @member {Integer} Viewport#width - The viewport's width
-	         */
-	        this.width = width;
-	        /**
-	         * @member {Integer} Viewport#height - The viewport's height
-	         */
-	        this.height = height;
-	        /**
-	         * @member {Integer} Viewport#options - The viewport's options
-	         */
-	        this.options = options;
-	        /**
-	         * @member {HTMLElement} Viewport#canvas - The canvas element
-	         */
-	        this.canvas = options.document.createElement("canvas");
-	        /**
-	         * @member {HTMLElement} Viewport#video - The video element
-	         */
-	        this.video = options.document.createElement("video");
-	        /**
-	         * @member {HTMLElement} Viewport#screen - The topmost element to handle UI. Events are also triggered from this element
-	         */
-	        this.screen = options.document.createElement("canvas");
-	
-	        this.canvas.id = "canvas";
-	        this.video.id = "video";
-	        this.screen.id = "screen";
-	
-	        this.canvas.width = this.screen.width = width;
-	        this.canvas.height = this.screen.height = height;
-	
-	        var viewportStyles = {
-	            height: this.height,
-	            left: 0,
-	            position: "absolute",
-	            top: 0,
-	            width: this.width
-	        };
-	
-	        (0, _domHelpers.applyStyles)(this.canvas, viewportStyles);
-	        (0, _domHelpers.applyStyles)(this.video, viewportStyles);
-	        (0, _domHelpers.applyStyles)(this.screen, viewportStyles);
-	
-	        options.parent.appendChild(this.canvas);
-	        options.parent.appendChild(this.video);
-	        options.parent.appendChild(this.screen);
-	
-	        if (options.fitToWindow) {
-	            (0, _radio.tuneIn)(options.window, "resize", this._onResize, this);
-	            (0, _radio.tuneIn)(options.window, "orientationchange", this._onResize, this);
-	            this._onResize();
-	        }
-	    }
-	
-	    /**
-	     * @method Viewport#_onResize
-	     */
-	
-	
-	    _createClass(Viewport, [{
-	        key: "_onResize",
-	        value: function _onResize() {
-	            var posCoords = (0, _domHelpers.fitToWindow)(this.width, this.height, this.options.window.innerWidth, this.options.window.innerHeight);
-	
-	            (0, _domHelpers.applyStyles)(this.canvas, posCoords);
-	            (0, _domHelpers.applyStyles)(this.video, posCoords);
-	            (0, _domHelpers.applyStyles)(this.screen, posCoords);
-	        }
-	    }]);
-	
-	    return Viewport;
-	}();
-	
-	exports.default = Viewport;
-
-/***/ },
-/* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var _package = __webpack_require__(3);
-	
-	var _package2 = _interopRequireDefault(_package);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var css = "background-color:#222; color:#0F0; font-size:16px";
-	
-	/* eslint-disable */
-	console.log("%c" + _package2.default.name, css);
-	console.log("%cv" + _package2.default.version, css);
-	/* eslint-enable */
-
-/***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	module.exports = {
-		"name": "spritewerk",
-		"version": "0.1.1",
-		"description": "A modern, modular, html5 game development library",
-		"scripts": {
-			"docs": "./node_modules/.bin/jsdoc ./src/* -d ./docs -R README.md -t ./node_modules/minami",
-			"lint": "./node_modules/.bin/eslint ./src",
-			"test": "./node_modules/.bin/babel-node spec/_run.js",
-			"build": "npm run lint && npm run test",
-			"watch-playground": "./node_modules/.bin/webpack --watch --progress --colors"
-		},
-		"repository": {
-			"type": "git",
-			"url": "git+https://github.com/bildepunkt/spritewerk.git"
-		},
-		"keywords": [
-			"javascript",
-			"js",
-			"html5",
-			"game",
-			"canvas",
-			"mobile"
-		],
-		"author": "Chris Peters (@bildepunkt)",
-		"license": "ISC",
-		"bugs": {
-			"url": "https://github.com/bildepunkt/spritewerk/issues"
-		},
-		"homepage": "https://github.com/bildepunkt/spritewerk#readme",
-		"devDependencies": {
-			"babel-cli": "6.7.7",
-			"babel-core": "6.7.7",
-			"babel-loader": "6.2.4",
-			"babel-preset-es2015": "6.3.13",
-			"eslint": "3.7.0",
-			"jasmine": "2.5.2",
-			"jasmine-spec-reporter": "2.7.0",
-			"jsdoc": "3.4.1",
-			"json-loader": "0.5.4",
-			"minami": "1.1.1",
-			"webpack": "1.13.2"
-		}
-	};
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.applyStyles = applyStyles;
-	exports.fitToWindow = fitToWindow;
-	exports.getScaleFactor = getScaleFactor;
-	
-	var _ = __webpack_require__(5);
-	
-	/**
-	 * @namespace util/domHelpers
-	 */
-	
-	/**
-	 * loops through style object and applies values. Adds "px" to numeric values.
-	 * @memberOf util/domHelpers
-	 * @method applyStyles
-	 * @param {HTMLElement} el     The element to apply styles to
-	 * @param {Object}      styles The key/value pair styles
-	 */
-	function applyStyles(el, styles) {
-	    for (var key in styles) {
-	        var val = styles[key];
-	
-	        el.style[key] = (0, _.isNumeric)(val) ? val + "px" : val;
-	    }
-	}
-	
-	/**
-	 * Returns position & dimensions for a DOM element to fit in the viewport while maintaining aspect ratio
-	 * @memberOf util/domHelpers
-	 * @method fitToWindow
-	 * @param  {Integer} elWidth   The element's original width
-	 * @param  {Integer} elHeight  The element's original height
-	 * @param  {Integer} winWidth  The window's current width
-	 * @param  {Integer} winHeight The window's current height
-	 * @return {Object}            The calculated left, top, width, height
-	 */
-	function fitToWindow(elWidth, elHeight, winWidth, winHeight) {
-	    var LANDSCAPE_RATIO = elHeight / elWidth;
-	    var PORTRAIT_RATIO = elWidth / elHeight;
-	    var IS_LANDSCAPE = LANDSCAPE_RATIO < PORTRAIT_RATIO ? true : false;
-	    var winLandscapeRatio = winHeight / winWidth;
-	    var winPortraitRatio = winWidth / winHeight;
-	    var offsetLeft = 0;
-	    var offsetTop = 0;
-	    var offsetWidth = void 0;
-	    var offsetHeight = void 0;
-	
-	    if (IS_LANDSCAPE) {
-	        if (LANDSCAPE_RATIO < winLandscapeRatio) {
-	            offsetWidth = winWidth;
-	            offsetHeight = offsetWidth * LANDSCAPE_RATIO;
-	            offsetTop = (winHeight - offsetHeight) / 2;
-	        } else {
-	            offsetHeight = winHeight;
-	            offsetWidth = winHeight * PORTRAIT_RATIO;
-	            offsetLeft = (winWidth - offsetWidth) / 2;
-	        }
-	    } else {
-	        if (PORTRAIT_RATIO < winPortraitRatio) {
-	            offsetHeight = winHeight;
-	            offsetWidth = winHeight * PORTRAIT_RATIO;
-	            offsetLeft = (winWidth - offsetWidth) / 2;
-	        } else {
-	            offsetWidth = winWidth;
-	            offsetHeight = offsetWidth * LANDSCAPE_RATIO;
-	            offsetTop = (winHeight - offsetHeight) / 2;
-	        }
-	    }
-	
-	    return {
-	        width: offsetWidth,
-	        height: offsetHeight,
-	        left: offsetLeft,
-	        top: offsetTop
-	    };
-	}
-	
-	/**
-	 * Returns the factor to multiply event coordinates by. If (with no css scale) x = y, use this function to still get y
-	 * even when the canvas is scaled via css. ie: `x * getScaleFactor() = y` regardless of css scaling.
-	 * @method util/getScaleFactor
-	 * @param  {HTMLElement} canvas - The canvas element
-	 * @return {Float} The ratio between the canvas' attribute size and its css size
-	 */
-	function getScaleFactor(canvas) {
-	    var factor = 1;
-	    var cssWidth = void 0;
-	
-	    // check if canvas has been scaled via CSS
-	    if (canvas.style.width) {
-	        cssWidth = parseInt(canvas.style.width, 10);
-	        factor = canvas.width / cssWidth;
-	    }
-	
-	    return factor;
-	}
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	/**
-	 * @namespace util
-	 */
-	
-	/**
-	 * Determine if an input is numeric or not
-	 * @method isNumeric
-	 * @memberOf util
-	 * @param {Any} n - A value to evaluate
-	 * @return {Boolean}
-	 */
-	var isNumeric = function isNumeric(n) {
-	  return !isNaN(parseFloat(n)) && isFinite(n);
-	};
-	
-	exports.isNumeric = isNumeric;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var handlers = {};
-	
-	/**
-	 * @namespace util/radio
-	 */
-	
-	/**
-	 * @method _addScopedHandler
-	 * @memberOf util/radio
-	 * @param  {String}   event    [description]
-	 * @param  {Function} handler [description]
-	 * @param  {Object}   scope    [description]
-	 * @return {Function} The scoped handler
-	 */
-	function _addScopedHandler(event, handler, scope) {
-	    if (handlers[event] === undefined) {
-	        handlers[event] = [];
-	    }
-	
-	    var scopedHandler = scope ? handler.bind(scope) : handler;
-	
-	    handlers[event].push({
-	        original: handler,
-	        scoped: scopedHandler
-	    });
-	
-	    return scopedHandler;
-	}
-	
-	/**
-	 * @method _removeScopedHandler
-	 * @memberOf util/radio
-	 * @param  {String}   event   [description]
-	 * @param  {Function} handler [description]
-	 * @return {Function}         Returns the scoped handler or original if scope was not passed on `add`
-	 */
-	function _removeScopedHandler(event, handler) {
-	    var scopedHandler = void 0;
-	
-	    for (var i = 0, len = handlers[event].length; i < len; i++) {
-	        if (handler === handler.original) {
-	            scopedHandler = handler.scoped;
-	            handlers[event].splice(i, 1);
-	        }
-	    }
-	
-	    return scopedHandler || handler;
-	}
-	
-	/**
-	 * @method tuneIn
-	 * @memberOf util/radio
-	 * @param {HTMLEntity} target
-	 * @param {String}     event
-	 * @param {Function}   handler
-	 * @param {Object}     [scope]
-	 */
-	function tuneIn(target, event, handler, scope) {
-	    // we add the handler here (even if no scope is passed) so that we don't have to make the user pass scope
-	    // on `remove`
-	    handler = _addScopedHandler(event, handler, scope);
-	
-	    target.addEventListener(event, handler, false);
-	}
-	
-	/**
-	 * @method tuneOut
-	 * @memberOf util/radio
-	 * @param {HTMLEntity} target
-	 * @param {String}     event
-	 * @param {Function}   handler
-	 */
-	function tuneOut(target, event, handler) {
-	    // check that a scoped handler was bound, returns original if not
-	    var scopedHandler = _removeScopedHandler(event, handler);
-	
-	    target.removeEventListener(event, scopedHandler, false);
-	}
-	
-	/**
-	 * @method broadcast
-	 * @memberOf util/radio
-	 * @param {Any}    target
-	 * @param {String} event
-	 * @param {Object} data
-	 */
-	function broadcast(target, event, data) {
-	    var evt = void 0;
-	
-	    switch (event) {
-	        // TODO verify MouseEvent
-	        case "click":
-	        case "dblclick":
-	        case "mousedown":
-	        case "mouseup":
-	        case "mousemove":
-	            evt = new MouseEvent(event, {
-	                "view": window,
-	                "bubbles": true,
-	                "cancelable": false
-	            });
-	            break;
-	        default:
-	            evt = new CustomEvent(event, {
-	                detail: data
-	            });
-	            break;
-	    }
-	
-	    target.dispatchEvent(evt);
-	}
-	
-	exports.tuneIn = tuneIn;
-	exports.tuneOut = tuneOut;
-	exports.broadcast = broadcast;
-
-/***/ },
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -673,424 +208,7 @@
 	exports.default = Camera;
 
 /***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _math = __webpack_require__(14);
-	
-	var _Transform = __webpack_require__(15);
-	
-	var _Transform2 = _interopRequireDefault(_Transform);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var defaults = {
-	    debug: false
-	};
-	
-	/**
-	 * Handles rendering entities onto the canvas element
-	 * @class Scene
-	 * @requires Transform
-	 * 
-	 * @param {HTMLElement} canvas - The active canvas element
-	 * @param {Camera} camera - The camera instance
-	 * @param {Object} [options]
-	 * @param {Boolean} [options.debug=false] - If true, renders debug objects
-	 */
-	
-	var Scene = function () {
-	    function Scene(canvas, camera) {
-	        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaults;
-	
-	        _classCallCheck(this, Scene);
-	
-	        /**
-	         * @member {HTMLElement} Scene#canvas - The active canvas element
-	         */
-	        this.canvas = canvas;
-	        /**
-	         * @member {Camera} Scene#camera - The camera instance
-	         */
-	        this.camera = camera;
-	        /**
-	         * @member {HTMLElement} Scene#options - The Scene's options
-	         */
-	        this.options = options;
-	        /**
-	         * @member {CanvasRenderingContext2D} Scene#ctx - The canvas rendering object
-	         */
-	        this.ctx = canvas.getContext("2d");
-	        /**
-	         * @member {Transform} Scene#transform - The transformation matrix tracker
-	         */
-	        this.transform = new _Transform2.default();
-	
-	        this.xformOffset = null;
-	        this.cameraXformOffset = null;
-	    }
-	
-	    /**
-	     * Applies the camera's transforms to the Transform > context
-	     * @method Scene#_applyCameraTransforms
-	     * @param {Camera} cam - The camera instance
-	     */
-	
-	
-	    _createClass(Scene, [{
-	        key: "_applyCameraTransforms",
-	        value: function _applyCameraTransforms(cam) {
-	            this.transform.translate(-cam.x, -cam.y);
-	
-	            if (cam.rotation !== 0) {
-	                var rotationOffsetWidth = cam.width / 2;
-	                var rotationOffsetHeight = cam.height / 2;
-	                this.transform.translate(rotationOffsetWidth, rotationOffsetHeight);
-	                this.transform.rotate((0, _math.degreesToRadians)(cam.rotation));
-	                this.transform.translate(-rotationOffsetWidth, -rotationOffsetHeight);
-	            }
-	
-	            if (cam.zoom !== 1) {
-	                var scaleOffsetWidth = cam.width / 2 * (cam.zoom - 1);
-	                var scaleOffsetHeight = cam.height / 2 * (cam.zoom - 1);
-	                this.transform.translate(-scaleOffsetWidth, -scaleOffsetHeight);
-	                this.transform.scale(cam.zoom, cam.zoom);
-	            }
-	
-	            this.cameraXformOffset = this.transform.transformPoint();
-	
-	            this.ctx.setTransform.apply(this.ctx, Array.prototype.slice.call(this.transform.matrix));
-	        }
-	
-	        /**
-	         * Applies a Sprite's transforms to the Transform > context
-	         * @method Scene#_applyTransforms
-	         * @param {Sprite} item - The sprite
-	         */
-	
-	    }, {
-	        key: "_applyTransforms",
-	        value: function _applyTransforms(item) {
-	            this.transform.translate(item.x, item.y);
-	            this.transform.rotate((0, _math.degreesToRadians)(item.rotation));
-	            this.transform.scale(item.sx, item.sy);
-	
-	            this.xformOffset = this.transform.transformPoint();
-	
-	            this.ctx.setTransform.apply(this.ctx, Array.prototype.slice.call(this.transform.matrix));
-	        }
-	    }, {
-	        key: "clear",
-	        value: function clear(fill) {
-	            var canvas = this.canvas;
-	
-	            if (fill) {
-	                this.context.fillStyle = fill;
-	                this.ctx.fillRect(0, 0, canvas.width, canvas.height);
-	            } else {
-	                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-	            }
-	        }
-	
-	        /**
-	         * [startRender description]
-	         * @method Scene#startRender
-	         * @param {Group} group The group to render
-	         */
-	
-	    }, {
-	        key: "startRender",
-	        value: function startRender(group) {
-	            var _this = this;
-	
-	            this.ctx.save();
-	            this.transform.save();
-	
-	            this._applyCameraTransforms(this.camera);
-	            group.sprite.render(this.ctx);
-	
-	            group.collection.each(function (item) {
-	                _this.renderItem(item);
-	            });
-	
-	            this.ctx.restore();
-	            this.transform.restore();
-	        }
-	
-	        /**
-	         * [renderItem description]
-	         * @method Scene#renderItem
-	         * @param  {Sprite|Group} item The item to render
-	         */
-	
-	    }, {
-	        key: "renderItem",
-	        value: function renderItem(item) {
-	            var _this2 = this;
-	
-	            this.ctx.save();
-	            this.transform.save();
-	
-	            if (item.isGroup) {
-	
-	                this._applyTransforms(item.sprite);
-	
-	                if (this.options.debug) {
-	                    this.ctx.fillRect(-8, -1, 16, 2);
-	                    this.ctx.fillRect(-1, -8, 2, 16);
-	                }
-	
-	                item.sprite.render(this.ctx);
-	
-	                item.collection.each(function (item) {
-	                    _this2.renderItem(item);
-	                });
-	            } else {
-	
-	                item.parentTransforms = this.transform.transformPoint();
-	                // assign parent transforms before applying sprite's transforms
-	                this._applyTransforms(item);
-	                item.render(this.ctx);
-	            }
-	
-	            this.ctx.restore();
-	            this.transform.restore();
-	        }
-	
-	        /**
-	         * [startUpdate description]
-	         * @method Scene#startUpdate
-	         * @param  {Group} group [description]
-	         * @param  {Float} factor [description]
-	         */
-	
-	    }, {
-	        key: "startUpdate",
-	        value: function startUpdate(group, factor) {
-	            var _this3 = this;
-	
-	            group.collection.each(function (item) {
-	                _this3.updateItem(item, factor);
-	            });
-	        }
-	
-	        /**
-	         * [updateItem description]
-	         * @method Scene#updateItem
-	         * @param  {Sprite|Group} item [description]
-	         * @param  {Float} factor [description]
-	         */
-	
-	    }, {
-	        key: "updateItem",
-	        value: function updateItem(item, factor) {
-	            var _this4 = this;
-	
-	            if (item.isGroup) {
-	                item.collection.each(function (item) {
-	                    _this4.updateItem(item, factor);
-	                });
-	            } else {
-	                item.update(factor);
-	            }
-	        }
-	    }]);
-	
-	    return Scene;
-	}();
-	
-	exports.default = Scene;
-
-/***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.degreesToRadians = degreesToRadians;
-	exports.radiansToDegrees = radiansToDegrees;
-	/**
-	 * @namespace util/math
-	 */
-	
-	/**
-	 * Convert degrees to radians
-	 * @memberOf util/math
-	 * @method degreesToRadians
-	 * @param  {Integer} deg The degrees to convert
-	 * @return {Float}
-	 */
-	function degreesToRadians(deg) {
-	  return deg * Math.PI / 180;
-	}
-	
-	/**
-	 * Convert radians to degrees
-	 * @memberOf util/math
-	 * @method radiansToDegrees
-	 * @param  {Float} rad The radians to convert
-	 * @return {Integer}
-	 */
-	function radiansToDegrees(rad) {
-	  return rad * 180 / Math.PI;
-	}
-
-/***/ },
-/* 15 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	/*
-	 * A fork from Simon Sarris
-	 */
-	var Transform = function () {
-	    function Transform() {
-	        _classCallCheck(this, Transform);
-	
-	        this.stack = [];
-	        this.reset();
-	    }
-	
-	    _createClass(Transform, [{
-	        key: "clone",
-	        value: function clone() {
-	            var m = this.m;
-	            return [m[0], m[1], m[2], m[3], m[4], m[5]];
-	        }
-	    }, {
-	        key: "reset",
-	        value: function reset() {
-	            this.m = [1, 0, 0, 1, 0, 0];
-	        }
-	    }, {
-	        key: "save",
-	        value: function save() {
-	            this.stack.push(this.clone());
-	        }
-	    }, {
-	        key: "restore",
-	        value: function restore() {
-	            if (this.stack.length) {
-	                var matrix = this.stack.pop();
-	                this.m = matrix;
-	            }
-	        }
-	    }, {
-	        key: "multiply",
-	        value: function multiply(matrix) {
-	            var m11 = this.m[0] * matrix.m[0] + this.m[2] * matrix.m[1];
-	            var m12 = this.m[1] * matrix.m[0] + this.m[3] * matrix.m[1];
-	
-	            var m21 = this.m[0] * matrix.m[2] + this.m[2] * matrix.m[3];
-	            var m22 = this.m[1] * matrix.m[2] + this.m[3] * matrix.m[3];
-	
-	            var dx = this.m[0] * matrix.m[4] + this.m[2] * matrix.m[5] + this.m[4];
-	            var dy = this.m[1] * matrix.m[4] + this.m[3] * matrix.m[5] + this.m[5];
-	
-	            this.m[0] = m11;
-	            this.m[1] = m12;
-	            this.m[2] = m21;
-	            this.m[3] = m22;
-	            this.m[4] = dx;
-	            this.m[5] = dy;
-	        }
-	    }, {
-	        key: "invert",
-	        value: function invert() {
-	            var d = 1 / (this.m[0] * this.m[3] - this.m[1] * this.m[2]);
-	            var m0 = this.m[3] * d;
-	            var m1 = -this.m[1] * d;
-	            var m2 = -this.m[2] * d;
-	            var m3 = this.m[0] * d;
-	            var m4 = d * (this.m[2] * this.m[5] - this.m[3] * this.m[4]);
-	            var m5 = d * (this.m[1] * this.m[4] - this.m[0] * this.m[5]);
-	            this.m[0] = m0;
-	            this.m[1] = m1;
-	            this.m[2] = m2;
-	            this.m[3] = m3;
-	            this.m[4] = m4;
-	            this.m[5] = m5;
-	        }
-	    }, {
-	        key: "rotate",
-	        value: function rotate(rad) {
-	            var c = Math.cos(rad);
-	            var s = Math.sin(rad);
-	            var m11 = this.m[0] * c + this.m[2] * s;
-	            var m12 = this.m[1] * c + this.m[3] * s;
-	            var m21 = this.m[0] * -s + this.m[2] * c;
-	            var m22 = this.m[1] * -s + this.m[3] * c;
-	            this.m[0] = m11;
-	            this.m[1] = m12;
-	            this.m[2] = m21;
-	            this.m[3] = m22;
-	        }
-	    }, {
-	        key: "translate",
-	        value: function translate(x, y) {
-	            this.m[4] += this.m[0] * x + this.m[2] * y;
-	            this.m[5] += this.m[1] * x + this.m[3] * y;
-	        }
-	    }, {
-	        key: "scale",
-	        value: function scale(sx, sy) {
-	            this.m[0] *= sx;
-	            this.m[1] *= sx;
-	            this.m[2] *= sy;
-	            this.m[3] *= sy;
-	        }
-	    }, {
-	        key: "transformPoint",
-	        value: function transformPoint() {
-	            var px = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	            var py = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	
-	            var x = px;
-	            var y = py;
-	            px = x * this.m[0] + y * this.m[2] + this.m[4];
-	            py = x * this.m[1] + y * this.m[3] + this.m[5];
-	
-	            return {
-	                x: px,
-	                y: py
-	            };
-	        }
-	    }, {
-	        key: "matrix",
-	        get: function get() {
-	            return this.m;
-	        }
-	    }]);
-	
-	    return Transform;
-	}();
-	
-	exports.default = Transform;
-
-/***/ },
-/* 16 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1099,11 +217,11 @@
 	  value: true
 	});
 	
-	var _Collection = __webpack_require__(17);
+	var _Collection = __webpack_require__(3);
 	
 	var _Collection2 = _interopRequireDefault(_Collection);
 	
-	var _Sprite = __webpack_require__(18);
+	var _Sprite = __webpack_require__(4);
 	
 	var _Sprite2 = _interopRequireDefault(_Sprite);
 	
@@ -1137,7 +255,7 @@
 	exports.default = Group;
 
 /***/ },
-/* 17 */
+/* 3 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1426,7 +544,7 @@
 	exports.default = Collection;
 
 /***/ },
-/* 18 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1437,7 +555,7 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _contextConstants = __webpack_require__(19);
+	var _contextConstants = __webpack_require__(5);
 	
 	var _contextConstants2 = _interopRequireDefault(_contextConstants);
 	
@@ -1571,7 +689,7 @@
 	exports.default = Sprite;
 
 /***/ },
-/* 19 */
+/* 5 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -1611,7 +729,7 @@
 	exports.default = contextConstants;
 
 /***/ },
-/* 20 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -1622,7 +740,424 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _radio = __webpack_require__(6);
+	var _math = __webpack_require__(7);
+	
+	var _Transform = __webpack_require__(8);
+	
+	var _Transform2 = _interopRequireDefault(_Transform);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var defaults = {
+	    debug: false
+	};
+	
+	/**
+	 * Handles rendering entities onto the canvas element
+	 * @class Scene
+	 * @requires Transform
+	 * 
+	 * @param {HTMLElement} canvas - The active canvas element
+	 * @param {Camera} camera - The camera instance
+	 * @param {Object} [options]
+	 * @param {Boolean} [options.debug=false] - If true, renders debug objects
+	 */
+	
+	var Scene = function () {
+	    function Scene(canvas, camera) {
+	        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaults;
+	
+	        _classCallCheck(this, Scene);
+	
+	        /**
+	         * @member {HTMLElement} Scene#canvas - The active canvas element
+	         */
+	        this.canvas = canvas;
+	        /**
+	         * @member {Camera} Scene#camera - The camera instance
+	         */
+	        this.camera = camera;
+	        /**
+	         * @member {HTMLElement} Scene#options - The Scene's options
+	         */
+	        this.options = options;
+	        /**
+	         * @member {CanvasRenderingContext2D} Scene#ctx - The canvas rendering object
+	         */
+	        this.ctx = canvas.getContext("2d");
+	        /**
+	         * @member {Transform} Scene#transform - The transformation matrix tracker
+	         */
+	        this.transform = new _Transform2.default();
+	
+	        this.xformOffset = null;
+	        this.cameraXformOffset = null;
+	    }
+	
+	    /**
+	     * Applies the camera's transforms to the Transform > context
+	     * @method Scene#_applyCameraTransforms
+	     * @param {Camera} cam - The camera instance
+	     */
+	
+	
+	    _createClass(Scene, [{
+	        key: "_applyCameraTransforms",
+	        value: function _applyCameraTransforms(cam) {
+	            this.transform.translate(-cam.x, -cam.y);
+	
+	            if (cam.rotation !== 0) {
+	                var rotationOffsetWidth = cam.width / 2;
+	                var rotationOffsetHeight = cam.height / 2;
+	                this.transform.translate(rotationOffsetWidth, rotationOffsetHeight);
+	                this.transform.rotate((0, _math.degreesToRadians)(cam.rotation));
+	                this.transform.translate(-rotationOffsetWidth, -rotationOffsetHeight);
+	            }
+	
+	            if (cam.zoom !== 1) {
+	                var scaleOffsetWidth = cam.width / 2 * (cam.zoom - 1);
+	                var scaleOffsetHeight = cam.height / 2 * (cam.zoom - 1);
+	                this.transform.translate(-scaleOffsetWidth, -scaleOffsetHeight);
+	                this.transform.scale(cam.zoom, cam.zoom);
+	            }
+	
+	            this.cameraXformOffset = this.transform.transformPoint();
+	
+	            this.ctx.setTransform.apply(this.ctx, Array.prototype.slice.call(this.transform.matrix));
+	        }
+	
+	        /**
+	         * Applies a Sprite's transforms to the Transform > context
+	         * @method Scene#_applyTransforms
+	         * @param {Sprite} item - The sprite
+	         */
+	
+	    }, {
+	        key: "_applyTransforms",
+	        value: function _applyTransforms(item) {
+	            this.transform.translate(item.x, item.y);
+	            this.transform.rotate((0, _math.degreesToRadians)(item.rotation));
+	            this.transform.scale(item.sx, item.sy);
+	
+	            this.xformOffset = this.transform.transformPoint();
+	
+	            this.ctx.setTransform.apply(this.ctx, Array.prototype.slice.call(this.transform.matrix));
+	        }
+	    }, {
+	        key: "clear",
+	        value: function clear(fill) {
+	            var canvas = this.canvas;
+	
+	            if (fill) {
+	                this.context.fillStyle = fill;
+	                this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+	            } else {
+	                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+	            }
+	        }
+	
+	        /**
+	         * [startRender description]
+	         * @method Scene#startRender
+	         * @param {Group} group The group to render
+	         */
+	
+	    }, {
+	        key: "startRender",
+	        value: function startRender(group) {
+	            var _this = this;
+	
+	            this.ctx.save();
+	            this.transform.save();
+	
+	            this._applyCameraTransforms(this.camera);
+	            group.sprite.render(this.ctx);
+	
+	            group.collection.each(function (item) {
+	                _this.renderItem(item);
+	            });
+	
+	            this.ctx.restore();
+	            this.transform.restore();
+	        }
+	
+	        /**
+	         * [renderItem description]
+	         * @method Scene#renderItem
+	         * @param  {Sprite|Group} item The item to render
+	         */
+	
+	    }, {
+	        key: "renderItem",
+	        value: function renderItem(item) {
+	            var _this2 = this;
+	
+	            this.ctx.save();
+	            this.transform.save();
+	
+	            if (item.isGroup) {
+	
+	                this._applyTransforms(item.sprite);
+	
+	                if (this.options.debug) {
+	                    this.ctx.fillRect(-8, -1, 16, 2);
+	                    this.ctx.fillRect(-1, -8, 2, 16);
+	                }
+	
+	                item.sprite.render(this.ctx);
+	
+	                item.collection.each(function (item) {
+	                    _this2.renderItem(item);
+	                });
+	            } else {
+	
+	                item.parentTransforms = this.transform.transformPoint();
+	                // assign parent transforms before applying sprite's transforms
+	                this._applyTransforms(item);
+	                item.render(this.ctx);
+	            }
+	
+	            this.ctx.restore();
+	            this.transform.restore();
+	        }
+	
+	        /**
+	         * [startUpdate description]
+	         * @method Scene#startUpdate
+	         * @param  {Group} group [description]
+	         * @param  {Float} factor [description]
+	         */
+	
+	    }, {
+	        key: "startUpdate",
+	        value: function startUpdate(group, factor) {
+	            var _this3 = this;
+	
+	            group.collection.each(function (item) {
+	                _this3.updateItem(item, factor);
+	            });
+	        }
+	
+	        /**
+	         * [updateItem description]
+	         * @method Scene#updateItem
+	         * @param  {Sprite|Group} item [description]
+	         * @param  {Float} factor [description]
+	         */
+	
+	    }, {
+	        key: "updateItem",
+	        value: function updateItem(item, factor) {
+	            var _this4 = this;
+	
+	            if (item.isGroup) {
+	                item.collection.each(function (item) {
+	                    _this4.updateItem(item, factor);
+	                });
+	            } else {
+	                item.update(factor);
+	            }
+	        }
+	    }]);
+	
+	    return Scene;
+	}();
+	
+	exports.default = Scene;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.degreesToRadians = degreesToRadians;
+	exports.radiansToDegrees = radiansToDegrees;
+	/**
+	 * @namespace util/math
+	 */
+	
+	/**
+	 * Convert degrees to radians
+	 * @memberOf util/math
+	 * @method degreesToRadians
+	 * @param  {Integer} deg The degrees to convert
+	 * @return {Float}
+	 */
+	function degreesToRadians(deg) {
+	  return deg * Math.PI / 180;
+	}
+	
+	/**
+	 * Convert radians to degrees
+	 * @memberOf util/math
+	 * @method radiansToDegrees
+	 * @param  {Float} rad The radians to convert
+	 * @return {Integer}
+	 */
+	function radiansToDegrees(rad) {
+	  return rad * 180 / Math.PI;
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	/*
+	 * A fork from Simon Sarris
+	 */
+	var Transform = function () {
+	    function Transform() {
+	        _classCallCheck(this, Transform);
+	
+	        this.stack = [];
+	        this.reset();
+	    }
+	
+	    _createClass(Transform, [{
+	        key: "clone",
+	        value: function clone() {
+	            var m = this.m;
+	            return [m[0], m[1], m[2], m[3], m[4], m[5]];
+	        }
+	    }, {
+	        key: "reset",
+	        value: function reset() {
+	            this.m = [1, 0, 0, 1, 0, 0];
+	        }
+	    }, {
+	        key: "save",
+	        value: function save() {
+	            this.stack.push(this.clone());
+	        }
+	    }, {
+	        key: "restore",
+	        value: function restore() {
+	            if (this.stack.length) {
+	                var matrix = this.stack.pop();
+	                this.m = matrix;
+	            }
+	        }
+	    }, {
+	        key: "multiply",
+	        value: function multiply(matrix) {
+	            var m11 = this.m[0] * matrix.m[0] + this.m[2] * matrix.m[1];
+	            var m12 = this.m[1] * matrix.m[0] + this.m[3] * matrix.m[1];
+	
+	            var m21 = this.m[0] * matrix.m[2] + this.m[2] * matrix.m[3];
+	            var m22 = this.m[1] * matrix.m[2] + this.m[3] * matrix.m[3];
+	
+	            var dx = this.m[0] * matrix.m[4] + this.m[2] * matrix.m[5] + this.m[4];
+	            var dy = this.m[1] * matrix.m[4] + this.m[3] * matrix.m[5] + this.m[5];
+	
+	            this.m[0] = m11;
+	            this.m[1] = m12;
+	            this.m[2] = m21;
+	            this.m[3] = m22;
+	            this.m[4] = dx;
+	            this.m[5] = dy;
+	        }
+	    }, {
+	        key: "invert",
+	        value: function invert() {
+	            var d = 1 / (this.m[0] * this.m[3] - this.m[1] * this.m[2]);
+	            var m0 = this.m[3] * d;
+	            var m1 = -this.m[1] * d;
+	            var m2 = -this.m[2] * d;
+	            var m3 = this.m[0] * d;
+	            var m4 = d * (this.m[2] * this.m[5] - this.m[3] * this.m[4]);
+	            var m5 = d * (this.m[1] * this.m[4] - this.m[0] * this.m[5]);
+	            this.m[0] = m0;
+	            this.m[1] = m1;
+	            this.m[2] = m2;
+	            this.m[3] = m3;
+	            this.m[4] = m4;
+	            this.m[5] = m5;
+	        }
+	    }, {
+	        key: "rotate",
+	        value: function rotate(rad) {
+	            var c = Math.cos(rad);
+	            var s = Math.sin(rad);
+	            var m11 = this.m[0] * c + this.m[2] * s;
+	            var m12 = this.m[1] * c + this.m[3] * s;
+	            var m21 = this.m[0] * -s + this.m[2] * c;
+	            var m22 = this.m[1] * -s + this.m[3] * c;
+	            this.m[0] = m11;
+	            this.m[1] = m12;
+	            this.m[2] = m21;
+	            this.m[3] = m22;
+	        }
+	    }, {
+	        key: "translate",
+	        value: function translate(x, y) {
+	            this.m[4] += this.m[0] * x + this.m[2] * y;
+	            this.m[5] += this.m[1] * x + this.m[3] * y;
+	        }
+	    }, {
+	        key: "scale",
+	        value: function scale(sx, sy) {
+	            this.m[0] *= sx;
+	            this.m[1] *= sx;
+	            this.m[2] *= sy;
+	            this.m[3] *= sy;
+	        }
+	    }, {
+	        key: "transformPoint",
+	        value: function transformPoint() {
+	            var px = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	            var py = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	
+	            var x = px;
+	            var y = py;
+	            px = x * this.m[0] + y * this.m[2] + this.m[4];
+	            py = x * this.m[1] + y * this.m[3] + this.m[5];
+	
+	            return {
+	                x: px,
+	                y: py
+	            };
+	        }
+	    }, {
+	        key: "matrix",
+	        get: function get() {
+	            return this.m;
+	        }
+	    }]);
+	
+	    return Transform;
+	}();
+	
+	exports.default = Transform;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _radio = __webpack_require__(10);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -1741,6 +1276,467 @@
 	}();
 	
 	exports.default = Ticker;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var handlers = {};
+	
+	/**
+	 * @namespace util/radio
+	 */
+	
+	/**
+	 * @method _addScopedHandler
+	 * @memberOf util/radio
+	 * @param  {String}   event    [description]
+	 * @param  {Function} handler [description]
+	 * @param  {Object}   scope    [description]
+	 * @return {Function} The scoped handler
+	 */
+	function _addScopedHandler(event, handler, scope) {
+	    if (handlers[event] === undefined) {
+	        handlers[event] = [];
+	    }
+	
+	    var scopedHandler = scope ? handler.bind(scope) : handler;
+	
+	    handlers[event].push({
+	        original: handler,
+	        scoped: scopedHandler
+	    });
+	
+	    return scopedHandler;
+	}
+	
+	/**
+	 * @method _removeScopedHandler
+	 * @memberOf util/radio
+	 * @param  {String}   event   [description]
+	 * @param  {Function} handler [description]
+	 * @return {Function}         Returns the scoped handler or original if scope was not passed on `add`
+	 */
+	function _removeScopedHandler(event, handler) {
+	    var scopedHandler = void 0;
+	
+	    for (var i = 0, len = handlers[event].length; i < len; i++) {
+	        if (handler === handler.original) {
+	            scopedHandler = handler.scoped;
+	            handlers[event].splice(i, 1);
+	        }
+	    }
+	
+	    return scopedHandler || handler;
+	}
+	
+	/**
+	 * @method tuneIn
+	 * @memberOf util/radio
+	 * @param {HTMLEntity} target
+	 * @param {String}     event
+	 * @param {Function}   handler
+	 * @param {Object}     [scope]
+	 */
+	function tuneIn(target, event, handler, scope) {
+	    // we add the handler here (even if no scope is passed) so that we don't have to make the user pass scope
+	    // on `remove`
+	    handler = _addScopedHandler(event, handler, scope);
+	
+	    target.addEventListener(event, handler, false);
+	}
+	
+	/**
+	 * @method tuneOut
+	 * @memberOf util/radio
+	 * @param {HTMLEntity} target
+	 * @param {String}     event
+	 * @param {Function}   handler
+	 */
+	function tuneOut(target, event, handler) {
+	    // check that a scoped handler was bound, returns original if not
+	    var scopedHandler = _removeScopedHandler(event, handler);
+	
+	    target.removeEventListener(event, scopedHandler, false);
+	}
+	
+	/**
+	 * @method broadcast
+	 * @memberOf util/radio
+	 * @param {Any}    target
+	 * @param {String} event
+	 * @param {Object} data
+	 */
+	function broadcast(target, event, data) {
+	    var evt = void 0;
+	
+	    switch (event) {
+	        // TODO verify MouseEvent
+	        case "click":
+	        case "dblclick":
+	        case "mousedown":
+	        case "mouseup":
+	        case "mousemove":
+	            evt = new MouseEvent(event, {
+	                "view": window,
+	                "bubbles": true,
+	                "cancelable": false
+	            });
+	            break;
+	        default:
+	            evt = new CustomEvent(event, {
+	                detail: data
+	            });
+	            break;
+	    }
+	
+	    target.dispatchEvent(evt);
+	}
+	
+	exports.tuneIn = tuneIn;
+	exports.tuneOut = tuneOut;
+	exports.broadcast = broadcast;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /* eslint-disable */
+	
+	/* eslint-enable */
+	
+	var _ = __webpack_require__(12);
+	
+	var _2 = _interopRequireDefault(_);
+	
+	var _domHelpers = __webpack_require__(14);
+	
+	var _radio = __webpack_require__(10);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var defaults = {
+	    fitToWindow: true
+	};
+	
+	/**
+	 * @class Viewport
+	 * @requires util/domHelpers
+	 * @requires util/radio
+	 *
+	 * @param {Integer} width The game width
+	 * @param {Integer} height The game height
+	 * @param {Object} options
+	 * @param {HTMLElement} [options.parent=document.body] - The parent element
+	 * @param {Boolean} [options.fitToWindow=true] - If true, the viewport will fill the screen while maintaining aspect ratio
+	 */
+	
+	var Viewport = function () {
+	    function Viewport(width, height) {
+	        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaults;
+	
+	        _classCallCheck(this, Viewport);
+	
+	        options = Object.assign(defaults, options);
+	
+	        // can't set as defaults; throw errors in test env
+	        if (options.window === undefined) {
+	            options.window = window;
+	        }
+	        if (options.document === undefined) {
+	            options.document = document;
+	        }
+	        if (options.parent === undefined) {
+	            options.parent = options.document.body;
+	        }
+	
+	        /**
+	         * @member {Integer} Viewport#width - The viewport's width
+	         */
+	        this.width = width;
+	        /**
+	         * @member {Integer} Viewport#height - The viewport's height
+	         */
+	        this.height = height;
+	        /**
+	         * @member {Integer} Viewport#options - The viewport's options
+	         */
+	        this.options = options;
+	        /**
+	         * @member {HTMLElement} Viewport#canvas - The canvas element
+	         */
+	        this.canvas = options.document.createElement("canvas");
+	        /**
+	         * @member {HTMLElement} Viewport#video - The video element
+	         */
+	        this.video = options.document.createElement("video");
+	        /**
+	         * @member {HTMLElement} Viewport#screen - The topmost element to handle UI. Events are also triggered from this element
+	         */
+	        this.screen = options.document.createElement("canvas");
+	
+	        this.canvas.id = "canvas";
+	        this.video.id = "video";
+	        this.screen.id = "screen";
+	
+	        this.canvas.width = this.screen.width = width;
+	        this.canvas.height = this.screen.height = height;
+	
+	        var viewportStyles = {
+	            height: this.height,
+	            left: 0,
+	            position: "absolute",
+	            top: 0,
+	            width: this.width
+	        };
+	
+	        (0, _domHelpers.applyStyles)(this.canvas, viewportStyles);
+	        (0, _domHelpers.applyStyles)(this.video, viewportStyles);
+	        (0, _domHelpers.applyStyles)(this.screen, viewportStyles);
+	
+	        options.parent.appendChild(this.canvas);
+	        options.parent.appendChild(this.video);
+	        options.parent.appendChild(this.screen);
+	
+	        if (options.fitToWindow) {
+	            (0, _radio.tuneIn)(options.window, "resize", this._onResize, this);
+	            (0, _radio.tuneIn)(options.window, "orientationchange", this._onResize, this);
+	            this._onResize();
+	        }
+	    }
+	
+	    /**
+	     * @method Viewport#_onResize
+	     */
+	
+	
+	    _createClass(Viewport, [{
+	        key: "_onResize",
+	        value: function _onResize() {
+	            var posCoords = (0, _domHelpers.fitToWindow)(this.width, this.height, this.options.window.innerWidth, this.options.window.innerHeight);
+	
+	            (0, _domHelpers.applyStyles)(this.canvas, posCoords);
+	            (0, _domHelpers.applyStyles)(this.video, posCoords);
+	            (0, _domHelpers.applyStyles)(this.screen, posCoords);
+	        }
+	    }]);
+	
+	    return Viewport;
+	}();
+	
+	exports.default = Viewport;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _package = __webpack_require__(13);
+	
+	var _package2 = _interopRequireDefault(_package);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var css = "background-color:#222; color:#0F0; font-size:16px";
+	
+	/* eslint-disable */
+	console.log("%c" + _package2.default.name, css);
+	console.log("%cv" + _package2.default.version, css);
+	/* eslint-enable */
+
+/***/ },
+/* 13 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"name": "spritewerk",
+		"version": "0.1.1",
+		"description": "A modern, modular, html5 game development library",
+		"scripts": {
+			"docs": "./node_modules/.bin/jsdoc ./src/* -d ./docs -R README.md -t ./node_modules/minami",
+			"lint": "./node_modules/.bin/eslint ./src",
+			"test": "./node_modules/.bin/babel-node spec/_run.js",
+			"build": "npm run lint && npm run test",
+			"make-playground": "./make-playground.sh",
+			"watch-playground": "./node_modules/.bin/webpack --watch --progress --colors"
+		},
+		"repository": {
+			"type": "git",
+			"url": "git+https://github.com/bildepunkt/spritewerk.git"
+		},
+		"keywords": [
+			"javascript",
+			"js",
+			"html5",
+			"game",
+			"canvas",
+			"mobile"
+		],
+		"author": "Chris Peters (@bildepunkt)",
+		"license": "ISC",
+		"bugs": {
+			"url": "https://github.com/bildepunkt/spritewerk/issues"
+		},
+		"homepage": "https://github.com/bildepunkt/spritewerk#readme",
+		"devDependencies": {
+			"babel-cli": "6.7.7",
+			"babel-core": "6.7.7",
+			"babel-loader": "6.2.4",
+			"babel-preset-es2015": "6.3.13",
+			"eslint": "3.7.0",
+			"jasmine": "2.5.2",
+			"jasmine-spec-reporter": "2.7.0",
+			"jsdoc": "3.4.1",
+			"json-loader": "0.5.4",
+			"minami": "1.1.1",
+			"webpack": "1.13.2"
+		}
+	};
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.applyStyles = applyStyles;
+	exports.fitToWindow = fitToWindow;
+	exports.getScaleFactor = getScaleFactor;
+	
+	var _ = __webpack_require__(15);
+	
+	/**
+	 * @namespace util/domHelpers
+	 */
+	
+	/**
+	 * loops through style object and applies values. Adds "px" to numeric values.
+	 * @memberOf util/domHelpers
+	 * @method applyStyles
+	 * @param {HTMLElement} el     The element to apply styles to
+	 * @param {Object}      styles The key/value pair styles
+	 */
+	function applyStyles(el, styles) {
+	    for (var key in styles) {
+	        var val = styles[key];
+	
+	        el.style[key] = (0, _.isNumeric)(val) ? val + "px" : val;
+	    }
+	}
+	
+	/**
+	 * Returns position & dimensions for a DOM element to fit in the viewport while maintaining aspect ratio
+	 * @memberOf util/domHelpers
+	 * @method fitToWindow
+	 * @param  {Integer} elWidth   The element's original width
+	 * @param  {Integer} elHeight  The element's original height
+	 * @param  {Integer} winWidth  The window's current width
+	 * @param  {Integer} winHeight The window's current height
+	 * @return {Object}            The calculated left, top, width, height
+	 */
+	function fitToWindow(elWidth, elHeight, winWidth, winHeight) {
+	    var LANDSCAPE_RATIO = elHeight / elWidth;
+	    var PORTRAIT_RATIO = elWidth / elHeight;
+	    var IS_LANDSCAPE = LANDSCAPE_RATIO < PORTRAIT_RATIO ? true : false;
+	    var winLandscapeRatio = winHeight / winWidth;
+	    var winPortraitRatio = winWidth / winHeight;
+	    var offsetLeft = 0;
+	    var offsetTop = 0;
+	    var offsetWidth = void 0;
+	    var offsetHeight = void 0;
+	
+	    if (IS_LANDSCAPE) {
+	        if (LANDSCAPE_RATIO < winLandscapeRatio) {
+	            offsetWidth = winWidth;
+	            offsetHeight = offsetWidth * LANDSCAPE_RATIO;
+	            offsetTop = (winHeight - offsetHeight) / 2;
+	        } else {
+	            offsetHeight = winHeight;
+	            offsetWidth = winHeight * PORTRAIT_RATIO;
+	            offsetLeft = (winWidth - offsetWidth) / 2;
+	        }
+	    } else {
+	        if (PORTRAIT_RATIO < winPortraitRatio) {
+	            offsetHeight = winHeight;
+	            offsetWidth = winHeight * PORTRAIT_RATIO;
+	            offsetLeft = (winWidth - offsetWidth) / 2;
+	        } else {
+	            offsetWidth = winWidth;
+	            offsetHeight = offsetWidth * LANDSCAPE_RATIO;
+	            offsetTop = (winHeight - offsetHeight) / 2;
+	        }
+	    }
+	
+	    return {
+	        width: offsetWidth,
+	        height: offsetHeight,
+	        left: offsetLeft,
+	        top: offsetTop
+	    };
+	}
+	
+	/**
+	 * Returns the factor to multiply event coordinates by. If (with no css scale) x = y, use this function to still get y
+	 * even when the canvas is scaled via css. ie: `x * getScaleFactor() = y` regardless of css scaling.
+	 * @method util/getScaleFactor
+	 * @param  {HTMLElement} canvas - The canvas element
+	 * @return {Float} The ratio between the canvas' attribute size and its css size
+	 */
+	function getScaleFactor(canvas) {
+	    var factor = 1;
+	    var cssWidth = void 0;
+	
+	    // check if canvas has been scaled via CSS
+	    if (canvas.style.width) {
+	        cssWidth = parseInt(canvas.style.width, 10);
+	        factor = canvas.width / cssWidth;
+	    }
+	
+	    return factor;
+	}
+
+/***/ },
+/* 15 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	/**
+	 * @namespace util
+	 */
+	
+	/**
+	 * Determine if an input is numeric or not
+	 * @method isNumeric
+	 * @memberOf util
+	 * @param {Any} n - A value to evaluate
+	 * @return {Boolean}
+	 */
+	var isNumeric = function isNumeric(n) {
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	};
+	
+	exports.isNumeric = isNumeric;
 
 /***/ }
 /******/ ]);
