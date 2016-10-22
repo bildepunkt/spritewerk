@@ -1,18 +1,9 @@
 import Camera from "../src/Camera";
 import Group from "../src/Group";
 import Scene from "../src/Scene";
-import Sprite from "../src/Sprite";
+import Rectangle from "../src/Rectangle";
 import Ticker from "../src/Ticker";
 import Viewport from "../src/Viewport";
-
-class Rect extends Sprite {
-    render (context) {
-        super.render(context);
-
-        context.fillStyle = this.fill;
-        context.fillRect(0, 0, this.width, this.height);
-    }
-}
 
 (() => {
     const size = 512;
@@ -36,7 +27,7 @@ class Rect extends Sprite {
         let wh = Math.round(Math.random() * 16 + 16);
         let x = Math.round(Math.random() * size);
         let y = Math.round(Math.random() * size);
-        let rect = new Rect(x, y, wh, wh);
+        let rect = new Rectangle(x, y, wh, wh);
 
         rect.fill = "#000";
 

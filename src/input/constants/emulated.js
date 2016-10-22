@@ -2,5 +2,11 @@
 export default {
     DRAG: "drag",
     DRAG_END: "dragend",
-    DRAG_START: "dragstart"
+    DRAG_START: "dragstart",
+
+    DBL_CLICK: "dblclick",
+    CLICK: "click",
+
+    DBL_TAP: "dbltap",
+    TAP: "tap"
 };
