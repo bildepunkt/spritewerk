@@ -93,7 +93,7 @@ export default class Scene {
         let canvas = this.canvas;
 
         if (fill) {
-            this.context.fillStyle = fill;
+            this.ctx.fillStyle = fill;
             this.ctx.fillRect(0, 0, canvas.width, canvas.height);
         } else {
             this.ctx.clearRect(0, 0, canvas.width, canvas.height);
