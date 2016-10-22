@@ -9,6 +9,7 @@ class Rect extends Sprite {
     render (context) {
         super.render(context);
 
+        context.fillStyle = this.fill;
         context.fillRect(0, 0, this.width, this.height);
     }
 }
@@ -37,11 +38,13 @@ class Rect extends Sprite {
         let y = Math.round(Math.random() * size);
         let rect = new Rect(x, y, wh, wh);
 
+        rect.fill = "#000";
+
         group.collection.add(rect);
     }
 
     ticker.onTick = ()=> {
-        scene.clear();
+        scene.clear("#ccc");
         scene.startRender(group);
 
         if (camera.zoom > 2) {

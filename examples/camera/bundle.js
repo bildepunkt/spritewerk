@@ -96,6 +96,7 @@
 	        value: function render(context) {
 	            _get(Rect.prototype.__proto__ || Object.getPrototypeOf(Rect.prototype), "render", this).call(this, context);
 	
+	            context.fillStyle = this.fill;
 	            context.fillRect(0, 0, this.width, this.height);
 	        }
 	    }]);
@@ -127,11 +128,13 @@
 	        var y = Math.round(Math.random() * size);
 	        var rect = new Rect(x, y, wh, wh);
 	
+	        rect.fill = "#000";
+	
 	        group.collection.add(rect);
 	    }
 	
 	    ticker.onTick = function () {
-	        scene.clear();
+	        scene.clear("#ccc");
 	        scene.startRender(group);
 	
 	        if (camera.zoom > 2) {
@@ -851,7 +854,7 @@
 	            var canvas = this.canvas;
 	
 	            if (fill) {
-	                this.context.fillStyle = fill;
+	                this.ctx.fillStyle = fill;
 	                this.ctx.fillRect(0, 0, canvas.width, canvas.height);
 	            } else {
 	                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
