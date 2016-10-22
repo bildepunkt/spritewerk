@@ -15,13 +15,14 @@ const defaults = {
  * @param {Boolean} [opts.fitToWindow=true] Whether or not to calculate offsets for resized canvas
  */
 export default class Input {
-    constructor(canvas, inputTypes, opts=defaults) {
+    constructor(canvas, inputTypes, tree, opts=defaults) {
         this.canvas = canvas;
         this.inputTypes = inputTypes;
+        this.tree = tree;
         this.options = opts;
 
         for (let inputType of inputTypes) {
-            inputType.init(canvas, opts.canvasFit);
+            inputType.init(canvas, tree, opts.canvasFit);
         }
 
         this._onTick = this._onTick.bind(this);

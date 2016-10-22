@@ -3,6 +3,7 @@ import touchCnst from "./constants/touch";
 import emulatedCnst from "./constants/emulated";
 import { getScaleFactor } from "../util/domHelpers";
 import DragEventManager from "./DragEventManager";
+import { pointRectCollide } from "../util/physics";
 
 /**
  * @module input/touchInput
@@ -13,8 +14,9 @@ export default {
      * @param  {[type]} canvas    [description]
      * @param  {[type]} canvasFit [description]
      */
-    init (canvas, canvasFit) {
+    init (canvas, tree, canvasFit) {
         this.canvas = canvas;
+        this.tree = tree;
         this.canvasFit = canvasFit;
 
         this.dragEventManager = new DragEventManager(
@@ -24,11 +26,11 @@ export default {
         );
 
         this.handlerObjects = {
-            [touchCnst.DBL_TAP]: [],
-            [touchCnst.TAP]: [],
             [touchCnst.TOUCH_START]: [],
             [touchCnst.TOUCH_MOVE]: [],
             [touchCnst.TOUCH_END]: [],
+            [emulatedCnst.DBL_TAP]: [],
+            [emulatedCnst.TAP]: [],
             [emulatedCnst.DRAG]: [],
             [emulatedCnst.DRAG_END]: [],
             [emulatedCnst.DRAG_START]: []
@@ -76,6 +78,14 @@ export default {
         // coordinate positions relative to canvas scaling
         event.x = Math.round((x - this.canvas.offsetLeft) * scaleFactor);
         event.y = Math.round((y - this.canvas.offsetTop) * scaleFactor);
+
+        // find and set target object
+        this.tree.collection.each((item)=> {
+            if (pointRectCollide(event.x, event.y, item)) {
+                event.target = item;
+                // don't break, we want the last-most (highest) item
+            }
+        });
 
         this.queuedEvents.push(event);
 

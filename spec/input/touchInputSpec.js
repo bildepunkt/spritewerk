@@ -1,6 +1,8 @@
 import touchInput from "../../src/input/touchInput";
 import touchCnst from "../../src/input/constants/touch";
 import emulatedCnst from "../../src/input/constants/emulated";
+import Group from "../../src/Group";
+import Rectangle from "../../src/shapes/Rectangle";
 import Canvas from "../_mocks/Canvas";
 import event from "../_mocks/event";
 
@@ -8,16 +10,18 @@ describe("touchInput", ()=> {
     let canvas = new Canvas();
 
     beforeEach(()=> {
-        touchInput.init(canvas, false);
+        let group = new Group();
+        group.collection.add(new Rectangle());
+        touchInput.init(canvas, group, false);
     });
 
     it("initializes", ()=> {
         expect(touchInput.handlerObjects).toEqual({
-            [touchCnst.DBL_TAP]: [],
-            [touchCnst.TAP]: [],
             [touchCnst.TOUCH_START]: [],
             [touchCnst.TOUCH_MOVE]: [],
             [touchCnst.TOUCH_END]: [],
+            [emulatedCnst.DBL_TAP]: [],
+            [emulatedCnst.TAP]: [],
             [emulatedCnst.DRAG]: [],
             [emulatedCnst.DRAG_END]: [],
             [emulatedCnst.DRAG_START]: []

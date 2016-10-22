@@ -3,6 +3,7 @@ import mouseCnst from "./constants/mouse";
 import emulatedCnst from "./constants/emulated";
 import { getScaleFactor } from "../util/domHelpers";
 import DragEventManager from "./DragEventManager";
+import { pointRectCollide } from "../util/physics";
 
 /**
  * @module input/mouseInput
@@ -13,8 +14,9 @@ export default {
      * @param  {[type]} canvas    [description]
      * @param  {[type]} canvasFit [description]
      */
-    init (canvas, canvasFit) {
+    init (canvas, tree, canvasFit) {
         this.canvas = canvas;
+        this.tree = tree;
         this.canvasFit = canvasFit;
 
         this.dragEventManager = new DragEventManager(
@@ -24,11 +26,11 @@ export default {
         );
 
         this.handlerObjects = {
-            [mouseCnst.DBL_CLICK]: [],
-            [mouseCnst.CLICK]: [],
             [mouseCnst.MOUSE_DOWN]: [],
             [mouseCnst.MOUSE_MOVE]: [],
             [mouseCnst.MOUSE_UP]: [],
+            [emulatedCnst.DBL_CLICK]: [],
+            [emulatedCnst.CLICK]: [],
             [emulatedCnst.DRAG]: [],
             [emulatedCnst.DRAG_END]: [],
             [emulatedCnst.DRAG_START]: []
@@ -64,6 +66,14 @@ export default {
         // coordinate positions relative to canvas scaling
         event.x = Math.round((inputEvent.pageX - this.canvas.offsetLeft) * scaleFactor);
         event.y = Math.round((inputEvent.pageY - this.canvas.offsetTop) * scaleFactor);
+
+        // find and set target object
+        this.tree.collection.each((item)=> {
+            if (pointRectCollide(event.x, event.y, item)) {
+                event.target = item;
+                // don't break, we want the last-most (highest) item
+            }
+        });
 
         this.queuedEvents.push(event);
 
