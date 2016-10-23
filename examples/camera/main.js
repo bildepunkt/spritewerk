@@ -1,7 +1,7 @@
 import Camera from "../src/Camera";
 import Group from "../src/Group";
 import Scene from "../src/Scene";
-import Rectangle from "../src/Rectangle";
+import Rectangle from "../src/shapes/Rectangle";
 import Ticker from "../src/Ticker";
 import Viewport from "../src/Viewport";
 
@@ -28,8 +28,6 @@ import Viewport from "../src/Viewport";
         let x = Math.round(Math.random() * size);
         let y = Math.round(Math.random() * size);
         let rect = new Rectangle(x, y, wh, wh);
-
-        rect.fill = "#000";
 
         group.collection.add(rect);
     }

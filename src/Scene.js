@@ -110,6 +110,8 @@ export default class Scene {
         this.transform.save();
         
         this._applyCameraTransforms(this.camera);
+        this._applyTransforms(group.sprite);
+        
         group.sprite.render(this.ctx);
 
         group.collection.each((item)=> {
