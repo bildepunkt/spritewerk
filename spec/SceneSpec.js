@@ -37,7 +37,7 @@ describe("Scene", ()=> {
     it("renders a group with one sprite", ()=> {
         spyOn(sprite, "render");
 
-        group.collection.add(sprite, "sprite");
+        group.collection.add(sprite);
         scene.startRender(group);
 
         expect(sprite.render).toHaveBeenCalledWith(context);
@@ -46,7 +46,7 @@ describe("Scene", ()=> {
     it("updates a group with one sprite", ()=> {
         spyOn(sprite, "update");
 
-        group.collection.add(sprite, "sprite");
+        group.collection.add(sprite);
         scene.startUpdate(group);
 
         expect(sprite.update).toHaveBeenCalled();
@@ -55,7 +55,7 @@ describe("Scene", ()=> {
     it("offsets the transform stack when camera zoomed", ()=> {
         camera.zoom = 2;
 
-        group.collection.add(sprite, "sprite");
+        group.collection.add(sprite);
         scene.startRender(group);
 
         expect(scene.cameraXformOffset).toEqual({
@@ -67,7 +67,7 @@ describe("Scene", ()=> {
         group.sx = 2;
         group.sy = 2;
 
-        group.collection.add(sprite, "sprite");
+        group.collection.add(sprite);
         scene.startRender(group);
 
         expect(scene.xformOffset).toEqual({
