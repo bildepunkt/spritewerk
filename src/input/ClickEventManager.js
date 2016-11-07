@@ -1,4 +1,4 @@
-import emulatedCnst from "./constants/emulated";
+//import emulatedCnst from "./constants/emulated";
 
 /**
  * Provides a common interface for mouse and touch events to emulate drag events
