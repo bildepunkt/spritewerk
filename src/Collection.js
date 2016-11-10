@@ -133,6 +133,7 @@ export default class Collection {
         return this.getIndex(item) === 0;
     }
 
+    // TODO unify with util.match
     /**
      * Returns if two items have the same unique id
      * @method Collection#match
@@ -186,7 +187,7 @@ export default class Collection {
         }
 
         this.remove(movee);
-        this.addAt(this.getCount() - 1, movee);
+        this.addAt(this.getCount(), movee);
 
         return true;
     }

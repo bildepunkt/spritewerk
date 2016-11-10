@@ -124,16 +124,36 @@ describe("CollectionNoName", ()=> {
         expect(collection.match(itemA, itemB)).toBe(false);
     });
 
-    xit("moves an item", ()=> {
+    it("moves an item", ()=> {
+        collection.add(itemA, itemB, itemC);
 
+        collection.move(itemA, 1);
+        expect(collection.fetchAt(0)).toEqual(itemB);
+        expect(collection.fetchAt(1)).toEqual(itemA);
+        expect(collection.fetchAt(2)).toEqual(itemC);
+
+        collection.move(itemC, -2);
+        expect(collection.fetchAt(0)).toEqual(itemC);
+        expect(collection.fetchAt(1)).toEqual(itemB);
+        expect(collection.fetchAt(2)).toEqual(itemA);
     });
 
-    xit("moves an item to the front (last index)", ()=> {
+    it("moves an item to the front (last index)", ()=> {
+        collection.add(itemA, itemB, itemC);
 
+        collection.moveToFront(itemA);
+        expect(collection.fetchAt(0)).toEqual(itemB);
+        expect(collection.fetchAt(1)).toEqual(itemC);
+        expect(collection.fetchAt(2)).toEqual(itemA);
     });
 
-    xit("moves an item to the back (first index)", ()=> {
+    it("moves an item to the back (first index)", ()=> {
+        collection.add(itemA, itemB, itemC);
 
+        collection.moveToBack(itemC);
+        expect(collection.fetchAt(0)).toEqual(itemC);
+        expect(collection.fetchAt(1)).toEqual(itemA);
+        expect(collection.fetchAt(2)).toEqual(itemB);
     });
 
     it("removes an item", ()=> {
