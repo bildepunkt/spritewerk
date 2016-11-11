@@ -40,6 +40,10 @@ class Sprite {
          */
         this.rotation = 0;
         /**
+         * @member {Boolean} Sprite#draggable - Whether the sprite can be dragged or not
+         */
+        this.draggable = false;
+        /**
          * @member {Float} Sprite#composite - The sprite's composite setting
          */
         this.composite = contextConstants.SOURCE_OVER;

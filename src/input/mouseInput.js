@@ -62,7 +62,7 @@ export default {
             shiftKey: inputEvent.shiftKey,
             metaKey: inputEvent.metaKey,
             button: inputEvent.button,
-            target: undefined
+            target: undefined // TODO set to canvas (screen)
         };
 
         // coordinate positions relative to canvas scaling
