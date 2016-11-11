@@ -1,3 +1,5 @@
+import { spriteMatch } from "./util";
+
 /**
  * @class Collection
  * @param {Any} [...items] - optional items to initially add
@@ -133,18 +135,6 @@ export default class Collection {
         return this.getIndex(item) === 0;
     }
 
-    // TODO unify with util.match
-    /**
-     * Returns if two items have the same unique id
-     * @method Collection#match
-     * @param  {Any} a - item a
-     * @param  {Any} b - item b
-     * @return {Boolean} If items match
-     */
-    match (a, b) {
-        return a.uuid === b.uuid;
-    }
-
     /**
      * Moves an item to a new index
      * @method Collection#move
@@ -220,7 +210,7 @@ export default class Collection {
 
         for (let i = 0, len = this.getCount(); i < len; i++) {
             let item = this.items[i];
-            if (this.match(item, removee)) {
+            if (spriteMatch(item, removee)) {
                 this.items.splice(i, 1);
                 removed = true;
                 break;

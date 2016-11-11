@@ -1,6 +1,6 @@
 import Collection from "../src/Collection";
 
-describe("CollectionNoName", ()=> {
+describe("Collection", ()=> {
     let itemA = { uuid: 0 };
     let itemB = { uuid: 1 };
     let itemC = { uuid: 2 };
@@ -117,11 +117,6 @@ describe("CollectionNoName", ()=> {
         expect(collection.isAtBack(itemA)).toBe(true);
         expect(collection.isAtBack(itemB)).toBe(false);
         expect(collection.isAtBack(itemC)).toBe(false);
-    });
-
-    it("matches two items", ()=> {
-        expect(collection.match(itemA, itemA)).toBe(true);
-        expect(collection.match(itemA, itemB)).toBe(false);
     });
 
     it("moves an item", ()=> {
