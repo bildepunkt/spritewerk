@@ -1,4 +1,6 @@
 import { tuneIn } from "../util/radio";
+import { spriteMatch } from "../util";
+import dragActionManager from "./dragActionManager";
 
 const defaults = {
     fitToWindow: true
@@ -19,10 +21,15 @@ export default class Input {
         this.canvas = canvas;
         this.inputTypes = inputTypes;
         this.tree = tree;
+
+        if (opts.window === undefined) {
+            opts.window = window;
+        }
+
         this.options = opts;
 
         for (let inputType of inputTypes) {
-            inputType.init(canvas, tree, opts.canvasFit);
+            inputType.init(canvas, tree, opts);
         }
 
         this._onTick = this._onTick.bind(this);
@@ -37,7 +44,16 @@ export default class Input {
         for (let inputType of this.inputTypes) {
             for (let event of inputType.queuedEvents) {
                 for (let handlerObj of inputType.handlerObjects[event.type]) {
-                    handlerObj.handler(event);
+                    // if not drag|dragend event, and target given, and it matches OR no target given
+                    // it doesn't apply to drag b/c on fast dragging, the event coordinates will move off the target
+                    // it doesn't apply to dragend b/c a dragend can happen on higher (top-most) target
+                    if (handlerObj.target ) {
+                        if (event.target && spriteMatch(handlerObj.target, event.target)) {
+                            handlerObj.handler(event);
+                        }
+                    } else {
+                        handlerObj.handler(event);
+                    }
                 }
             }
 

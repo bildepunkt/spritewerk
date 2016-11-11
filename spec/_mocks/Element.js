@@ -184,7 +184,12 @@ class Element {
     getAttributeNS () {}
     getAttributeNode () {}
     getAttributeNodeNS () {}
-    getBoundingClientRect () {}
+    getBoundingClientRect () {
+        return {
+            left: 0,
+            top: 0
+        };
+    }
     getClientRects () {}
     getDestinationInsertionPoints () {}
     getElementsByClassName () {}

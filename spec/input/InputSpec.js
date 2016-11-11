@@ -2,6 +2,7 @@ import Input from "../../src/input/Input";
 import mouseInput from "../../src/input/mouseInput";
 import Group from "../../src/Group";
 import Canvas from "../_mocks/Canvas";
+import window from "../_mocks/window";
 import event from "../_mocks/event";
 
 describe("Input", ()=> {
@@ -15,7 +16,8 @@ describe("Input", ()=> {
     beforeEach(()=> {
         let grp = new Group();
         input = new Input(canvas, [mouseInput], grp, {
-            listenForTouch: false
+            listenForTouch: false,
+            window: window
         });
     });
 
@@ -93,7 +95,8 @@ describe("Input", ()=> {
             metaKey: false,
             button: 0,
             x: 32,
-            y: 32
+            y: 32,
+            target: undefined
         });
     });
 

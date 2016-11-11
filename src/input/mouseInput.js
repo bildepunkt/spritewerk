@@ -12,12 +12,12 @@ export default {
     /**
      * @method mouseInput.init
      * @param  {[type]} canvas    [description]
-     * @param  {[type]} canvasFit [description]
+     * @param  {Object} opts - Options from Input
      */
-    init (canvas, tree, canvasFit) {
+    init (canvas, tree, opts) {
         this.canvas = canvas;
         this.tree = tree;
-        this.canvasFit = canvasFit;
+        this.opts = opts;
 
         this.dragEventManager = new DragEventManager(
             mouseCnst.MOUSE_DOWN,
@@ -53,19 +53,21 @@ export default {
         inputEvent.preventDefault();
         inputEvent.stopPropagation();
 
-        let scaleFactor = this.canvasFit ? getScaleFactor(this.canvas) : 1;
+        let boundingRect = this.canvas.getBoundingClientRect();
+        let scaleFactor = this.opts.canvasFit ? getScaleFactor(this.canvas) : 1;
         let event = {
             domEvent: inputEvent,
             type: inputEvent.type,
             ctrlKey: inputEvent.ctrlKey,
             shiftKey: inputEvent.shiftKey,
             metaKey: inputEvent.metaKey,
-            button: inputEvent.button
+            button: inputEvent.button,
+            target: undefined
         };
 
         // coordinate positions relative to canvas scaling
-        event.x = Math.round((inputEvent.pageX - this.canvas.offsetLeft) * scaleFactor);
-        event.y = Math.round((inputEvent.pageY - this.canvas.offsetTop) * scaleFactor);
+        event.x = Math.ceil((inputEvent.pageX - (boundingRect.left + this.opts.window.scrollX)) * scaleFactor);
+        event.y = Math.ceil((inputEvent.pageY - (boundingRect.top + this.opts.window.scrollY)) * scaleFactor);
 
         // find and set target object
         this.tree.collection.each((item)=> {
