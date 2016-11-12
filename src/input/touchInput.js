@@ -3,7 +3,9 @@ import touchCnst from "./constants/touch";
 import emulatedCnst from "./constants/emulated";
 import { getScaleFactor } from "../util/domHelpers";
 import DragEventManager from "./DragEventManager";
+import ClickEventManager from "./ClickEventManager";
 import { pointRectCollide } from "../util/physics";
+import stage from "./stage";
 
 /**
  * @module input/touchInput
@@ -22,6 +24,11 @@ export default {
         this.dragEventManager = new DragEventManager(
             touchCnst.TOUCH_START,
             touchCnst.TOUCH_MOVE,
+            touchCnst.TOUCH_END
+        );
+
+        this.clickEventManager = new ClickEventManager(
+            touchCnst.TOUCH_START,
             touchCnst.TOUCH_END
         );
 
@@ -62,7 +69,7 @@ export default {
             shiftKey: inputEvent.shiftKey,
             metaKey: inputEvent.metaKey,
             button: inputEvent.button,
-            target: undefined
+            target: stage
         };
         let x, y;
 
@@ -91,6 +98,9 @@ export default {
 
         this.queuedEvents.push(event);
 
-        this.queuedEvents = this.queuedEvents.concat(this.dragEventManager.getDragEvents(event));
+        this.queuedEvents = this.queuedEvents.concat(
+            this.dragEventManager.getEvents(event),
+            this.clickEventManager.getEvents(event)
+        );
     }
 };

@@ -3,7 +3,9 @@ import mouseCnst from "./constants/mouse";
 import emulatedCnst from "./constants/emulated";
 import { getScaleFactor } from "../util/domHelpers";
 import DragEventManager from "./DragEventManager";
+import ClickEventManager from "./ClickEventManager";
 import { pointRectCollide } from "../util/physics";
+import stage from "./stage";
 
 /**
  * @module input/mouseInput
@@ -22,6 +24,11 @@ export default {
         this.dragEventManager = new DragEventManager(
             mouseCnst.MOUSE_DOWN,
             mouseCnst.MOUSE_MOVE,
+            mouseCnst.MOUSE_UP
+        );
+
+        this.clickEventManager = new ClickEventManager(
+            mouseCnst.MOUSE_DOWN,
             mouseCnst.MOUSE_UP
         );
 
@@ -62,7 +69,7 @@ export default {
             shiftKey: inputEvent.shiftKey,
             metaKey: inputEvent.metaKey,
             button: inputEvent.button,
-            target: undefined // TODO set to canvas (screen)
+            target: stage // TODO set to canvas (screen)
         };
 
         // coordinate positions relative to canvas scaling
@@ -79,6 +86,9 @@ export default {
 
         this.queuedEvents.push(event);
 
-        this.queuedEvents = this.queuedEvents.concat(this.dragEventManager.getDragEvents(event));
+        this.queuedEvents = this.queuedEvents.concat(
+            this.dragEventManager.getEvents(event),
+            this.clickEventManager.getEvents(event)
+        );
     }
 };

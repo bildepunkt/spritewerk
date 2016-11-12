@@ -1,6 +1,7 @@
 import Input from "../../src/input/Input";
 import mouseInput from "../../src/input/mouseInput";
 import Group from "../../src/Group";
+import stage from "../../src/input/stage";
 import Canvas from "../_mocks/Canvas";
 import window from "../_mocks/window";
 import event from "../_mocks/event";
@@ -9,8 +10,8 @@ describe("Input", ()=> {
     let canvas = new Canvas();
     let input;
 
-    function handleEvent (e) {
-        console.log(e);
+    function handleEvent (/*e*/) {
+        //console.log(e);
     }
 
     beforeEach(()=> {
@@ -96,7 +97,7 @@ describe("Input", ()=> {
             button: 0,
             x: 32,
             y: 32,
-            target: undefined
+            target: stage
         });
     });
 

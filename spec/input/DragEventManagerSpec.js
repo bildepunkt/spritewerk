@@ -1,58 +1,66 @@
 import DragEventManager from "../../src/input/DragEventManager";
 import touchCnst from "../../src/input/constants/touch";
+import mouseCnst from "../../src/input/constants/mouse";
 import emulatedCnst from "../../src/input/constants/emulated";
 
 describe("DragEventManager", ()=> {
-    let dragEventManager;
+    let touchDragEventManager;
+    let mouseDragEventManager;
 
     beforeEach(()=> {
-        dragEventManager = new DragEventManager(
+        touchDragEventManager = new DragEventManager(
             touchCnst.TOUCH_START,
             touchCnst.TOUCH_MOVE,
             touchCnst.TOUCH_END
         );
+
+        mouseDragEventManager = new DragEventManager(
+            mouseCnst.MOUSE_DOWN,
+            mouseCnst.MOUSE_MOVE,
+            mouseCnst.MOUSE_UP
+        );
     });
 
-    it("sets canDrag flag to true", ()=> {
-        dragEventManager.getDragEvents({
+    it("(touch) sets canDrag flag to true", ()=> {
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_START
         });
 
-        expect(dragEventManager.canDrag).toBe(true);
+        expect(touchDragEventManager.canDrag).toBe(true);
     });
 
-    it("sets isDragging flag to true", ()=> {
-        dragEventManager.getDragEvents({
+    it("(touch) sets isDragging flag to true", ()=> {
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_START
         });
-        dragEventManager.getDragEvents({
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_MOVE
         });
 
-        expect(dragEventManager.isDragging).toBe(true);
+        expect(touchDragEventManager.isDragging).toBe(true);
     });
 
-    it("reverts canDrag and isDragging", ()=> {
-        dragEventManager.getDragEvents({
+    it("(touch) reverts canDrag and isDragging", ()=> {
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_START
         });
-        dragEventManager.getDragEvents({
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_MOVE
         });
-        dragEventManager.getDragEvents({
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_END
         });
 
-        expect(dragEventManager.canDrag).toBe(false);
-        expect(dragEventManager.isDragging).toBe(false);
+        expect(touchDragEventManager.canDrag).toBe(false);
+        expect(touchDragEventManager.isDragging).toBe(false);
     });
 
-    it("returns [ DRAG_START, DRAG ], and [ DRAG_END ]", ()=> {
-        dragEventManager.getDragEvents({
+    it("(touch) returns [ DRAG_START, DRAG ], and [ DRAG_END ]", ()=> {
+        touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_START
         });
 
-        expect(dragEventManager.getDragEvents({
+        expect(touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_MOVE
         })).toEqual(
             [{
@@ -62,8 +70,64 @@ describe("DragEventManager", ()=> {
             }]
         );
 
-        expect(dragEventManager.getDragEvents({
+        expect(touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_END
+        })).toEqual(
+            [{ type: emulatedCnst.DRAG_END }]
+        );
+    });
+
+    it("(mouse) sets canDrag flag to true", ()=> {
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_DOWN
+        });
+
+        expect(mouseDragEventManager.canDrag).toBe(true);
+    });
+
+    it("(mouse) sets isDragging flag to true", ()=> {
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_DOWN
+        });
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_MOVE
+        });
+
+        expect(mouseDragEventManager.isDragging).toBe(true);
+    });
+
+    it("(mouse) reverts canDrag and isDragging", ()=> {
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_DOWN
+        });
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_MOVE
+        });
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_UP
+        });
+
+        expect(mouseDragEventManager.canDrag).toBe(false);
+        expect(mouseDragEventManager.isDragging).toBe(false);
+    });
+
+    it("(mouse) returns [ DRAG_START, DRAG ], and [ DRAG_END ]", ()=> {
+        mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_DOWN
+        });
+
+        expect(mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_MOVE
+        })).toEqual(
+            [{
+                type: emulatedCnst.DRAG_START
+            }, {
+                type: emulatedCnst.DRAG
+            }]
+        );
+
+        expect(mouseDragEventManager.getEvents({
+            type: mouseCnst.MOUSE_UP
         })).toEqual(
             [{ type: emulatedCnst.DRAG_END }]
         );

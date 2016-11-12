@@ -17,7 +17,7 @@ export default class DragEventManager {
         this.canDrag = false;
     }
 
-    getDragEvents (event) {
+    getEvents (event) {
         let dragEvents = [];
 
         // emulate events
