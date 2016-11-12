@@ -64,16 +64,21 @@ describe("DragEventManager", ()=> {
             type: touchCnst.TOUCH_MOVE
         })).toEqual(
             [{
-                type: emulatedCnst.DRAG_START
+                type: emulatedCnst.DRAG_START,
+                target: undefined
             }, {
-                type: emulatedCnst.DRAG
+                type: emulatedCnst.DRAG,
+                target: undefined
             }]
         );
 
         expect(touchDragEventManager.getEvents({
             type: touchCnst.TOUCH_END
         })).toEqual(
-            [{ type: emulatedCnst.DRAG_END }]
+            [{
+                type: emulatedCnst.DRAG_END,
+                target: undefined
+            }]
         );
     });
 
@@ -120,16 +125,21 @@ describe("DragEventManager", ()=> {
             type: mouseCnst.MOUSE_MOVE
         })).toEqual(
             [{
-                type: emulatedCnst.DRAG_START
+                type: emulatedCnst.DRAG_START,
+                target: undefined
             }, {
-                type: emulatedCnst.DRAG
+                type: emulatedCnst.DRAG,
+                target: undefined
             }]
         );
 
         expect(mouseDragEventManager.getEvents({
             type: mouseCnst.MOUSE_UP
         })).toEqual(
-            [{ type: emulatedCnst.DRAG_END }]
+            [{
+                type: emulatedCnst.DRAG_END,
+                target: undefined
+            }]
         );
     });
 });

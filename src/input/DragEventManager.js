@@ -13,6 +13,7 @@ export default class DragEventManager {
         this.startEvent = start;
         this.moveEvent = move;
         this.endEvent = end;
+        this.dragee = null;
         this.isDragging = false;
         this.canDrag = false;
     }
@@ -24,18 +25,21 @@ export default class DragEventManager {
         switch (event.type) {
         case this.startEvent:
             this.canDrag = true;
+            this.dragee = event.target;
 
             break;
         case this.moveEvent:
             if (this.canDrag) {
                 if (!this.isDragging) {
                     dragEvents.push(Object.assign({}, event, {
-                        type: emulatedCnst.DRAG_START
+                        type: emulatedCnst.DRAG_START,
+                        target: this.dragee
                     }));
                 }
 
                 dragEvents.push(Object.assign({}, event, {
-                    type: emulatedCnst.DRAG
+                    type: emulatedCnst.DRAG,
+                    target: this.dragee
                 }));
 
                 this.isDragging = true;
@@ -45,10 +49,12 @@ export default class DragEventManager {
         case this.endEvent:
             if (this.isDragging) {
                 dragEvents.push(Object.assign({}, event, {
-                    type: emulatedCnst.DRAG_END
+                    type: emulatedCnst.DRAG_END,
+                    target: this.dragee
                 }));
 
                 this.isDragging = false;
+                this.dragee = null;
             }
 
             this.canDrag = false;
