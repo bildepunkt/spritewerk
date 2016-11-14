@@ -3,7 +3,7 @@ import touchCnst from "../../src/input/constants/touch";
 import mouseCnst from "../../src/input/constants/mouse";
 import emulatedCnst from "../../src/input/constants/emulated";
 
-describe("ClickEventManager", ()=> {
+describe("input/ClickEventManager", ()=> {
     const clickee = {
         uuid: 4
     };

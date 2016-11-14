@@ -4,7 +4,7 @@ import keycodes from "../../src/input/constants/keycodes";
 import Canvas from "../_mocks/Canvas";
 import event from "../_mocks/event";
 
-describe("keyboardInput", ()=> {
+describe("input/keyboardInput", ()=> {
     let canvas = new Canvas();
 
     beforeEach(()=> {

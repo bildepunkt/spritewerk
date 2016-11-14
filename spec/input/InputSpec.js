@@ -6,7 +6,7 @@ import Canvas from "../_mocks/Canvas";
 import window from "../_mocks/window";
 import event from "../_mocks/event";
 
-describe("Input", ()=> {
+describe("input/Input", ()=> {
     let canvas = new Canvas();
     let input;
 

@@ -7,7 +7,7 @@ import Canvas from "../_mocks/Canvas";
 import win from "../_mocks/window";
 import event from "../_mocks/event";
 
-describe("touchInput", ()=> {
+describe("input/touchInput", ()=> {
     let canvas = new Canvas();
 
     beforeEach(()=> {

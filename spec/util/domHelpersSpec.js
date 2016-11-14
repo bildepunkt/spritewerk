@@ -10,7 +10,7 @@ describe("util/domHelpers", ()=> {
             el = {
                 style: {}
             };
-        })
+        });
 
         it("applies styles", ()=> {
             let styles = {

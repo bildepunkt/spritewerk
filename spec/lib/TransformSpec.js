@@ -1,6 +1,6 @@
 import Transform from "../../src/lib/Transform";
 
-describe("Transform", ()=> {
+describe("lib/Transform", ()=> {
     let xform;
 
     beforeEach(()=> {
