@@ -4,6 +4,10 @@ let handlers = {};
  * @namespace util/radio
  */
 
+export let config = {
+    window: null
+};
+
 /**
  * @method _addScopedHandler
  * @memberOf util/radio
@@ -94,14 +98,14 @@ function broadcast(target, event, data) {
     case "mousedown":
     case "mouseup":
     case "mousemove":
-        evt = new MouseEvent(event, {
+        evt = new config.window.MouseEvent(event, {
             "view": window,
             "bubbles": true,
             "cancelable": false
         });
         break;
     default:
-        evt = new CustomEvent(event, {
+        evt = new config.window.CustomEvent(event, {
             detail: data
         });
         break;

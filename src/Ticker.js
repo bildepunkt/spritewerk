@@ -1,4 +1,4 @@
-import { broadcast } from "./util/radio";
+import { config, broadcast } from "./util/radio";
 
 const defaults = {
     start: true
@@ -11,12 +11,22 @@ const defaults = {
  * 
  * @param {Object} [opts] The Ticker's options
  * @param {Boolean} [opts.start=true] Starts timer on instantiation
+ * @param {Boolean} [opts.window] window for testing env
  */
 export default class Ticker {
     constructor(screen, opts=defaults) {
         this.screen = screen;
         this.ticks = 0;
         this.then = null;
+
+        if (opts.window === undefined) {
+            opts.window = window;
+        }
+
+        // set radio module config for testing
+        config.window = opts.window;
+
+        this.opts = opts;
 
         this._update = this._update.bind(this);
 
@@ -51,7 +61,7 @@ export default class Ticker {
         this.onPostTick(delta, this.ticks);
         broadcast(this.screen, "tick", detail);
 
-        requestAnimationFrame(this._update);
+        this.opts.window.requestAnimationFrame(this._update);
     }
 
     /**
@@ -86,6 +96,6 @@ export default class Ticker {
      */
     start() {
         this.then = Date.now();
-        requestAnimationFrame(this._update);
+        this.opts.window.requestAnimationFrame(this._update);
     }
 }
