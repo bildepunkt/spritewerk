@@ -1,9 +1,9 @@
 import Sprite from "../Sprite";
 
 /**
- * @class Rectangle
+ * @class Ellipse
  */
-export default class Rectangle extends Sprite {
+export default class Ellipse extends Sprite {
     constructor (x, y, w, h) {
         super(x, y, w, h);
         
@@ -15,7 +15,7 @@ export default class Rectangle extends Sprite {
         super.render(context);
 
         context.beginPath();
-        context.rect(0, 0, this.width, this.height);
+        context.ellipse(0, 0, this.width, this.height, 0, 0, 2 * Math.PI);
 
         if (this.fill) {
             context.fillStyle = this.fill;
