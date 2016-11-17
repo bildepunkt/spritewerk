@@ -1,4 +1,5 @@
 import doc from "./document";
+import Element from "./Element";
 
 export default {
     Infinity: Infinity,
@@ -10,7 +11,7 @@ export default {
     Array: ()=> {},
     ArrayBuffer: ()=> {},
     Attr: ()=> {},
-    Audio: ()=> {},
+    Audio: Element,
     AudioBuffer: ()=> {},
     AudioBufferSourceNode: ()=> {},
     AudioContext: ()=> {},
@@ -203,7 +204,7 @@ export default {
     IDBVersionChangeEvent: ()=> {},
     IIRFilterNode: ()=> {},
     IdleDeadline: ()=> {},
-    Image: ()=> {},
+    Image: Element,
     ImageBitmap: ()=> {},
     ImageData: ()=> {},
     InputDeviceCapabilities: ()=> {},
@@ -466,6 +467,7 @@ export default {
     Uint32Array: ()=> {},
     VTTCue: ()=> {},
     ValidityState: ()=> {},
+    Video: Element,
     WaveShaperNode: ()=> {},
     WeakMap: ()=> {},
     WeakSet: ()=> {},
